@@ -42,6 +42,10 @@ class PodcastFeedWriterTest {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("Direct feed");
+        System.out.println(podcastFeedData);
+        System.out.println("Generated feed");
+        System.out.println(returnedFeed);
 
         XmlAssert
             .assertThat(podcastFeedData)
