@@ -24,3 +24,9 @@ jobs:
       with:
         name: build-reports
         path: build/reports/
+    - name: Upload Test XML Files
+      uses: actions/upload-artifact@v3
+      if: always() # always run even if the previous step fails
+      with:
+        name: test-xmls
+        path: ${{ runner.temp }}/*.xml
