@@ -7,6 +7,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
@@ -15,14 +16,21 @@ class PodcastFeedWriterTest {
     void TestWriteTal() {
         String xmlName = "tal.xml";
         PodcastTest podcastTest = new PodcastTest();
-        Podcast podcast = podcastTest.stringXmlToPodcastObject(xmlName);
+        String podcastFeedData = podcastTest.getRawStringFromAssets(xmlName);
+        PodcastFeedHandler classUnderTest = new PodcastFeedHandler();
+        Podcast fromDoc;
+        try {
+            fromDoc = classUnderTest.getPodcastFromDocument(podcastFeedData);
+        } catch (MalformedURLException | PodcastFeedException e) {
+            throw new RuntimeException(e);
+        }
         PodcastFeedWriter writer = new PodcastFeedWriter();
         writer.setAddGeneratedElement(false);
         writer.setAddGeneratedTime(false);
 
         String returnedFeed;
         try {
-            returnedFeed = writer.getXml(podcast);
+            returnedFeed = writer.getXml(fromDoc);
         } catch (ParserConfigurationException | TransformerException e) {
             throw new RuntimeException(e);
         }
@@ -36,9 +44,9 @@ class PodcastFeedWriterTest {
         }
 
         XmlAssert
-                .assertThat(podcastTest.getRawStringFromAssets(xmlName))
-                .and(returnedFeed)
-                .ignoreWhitespace().ignoreChildNodesOrder().ignoreElementContentWhitespace().areSimilar();
+            .assertThat(podcastFeedData)
+            .and(returnedFeed)
+            .ignoreWhitespace().ignoreChildNodesOrder().ignoreElementContentWhitespace().areSimilar();
     }
 
     @Test
