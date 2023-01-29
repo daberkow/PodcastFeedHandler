@@ -11,9 +11,8 @@ targetCompatibility = 11
 group = 'co.ntbl.podcastfeedhandler'
 
 test {
-    minHeapSize = "256m" // initial heap size
-    maxHeapSize = "1024m" // maximum heap size
-    jvmArgs '-XX:MaxPermSize=2048m' // mem argument for the test JVM
+//    minHeapSize = "256m" // initial heap size
+//    maxHeapSize = "1024m" // maximum heap size
     testLogging {
         // Make sure output from
         // standard out or error is shown
