@@ -3,46 +3,48 @@
  */
 package co.ntbl.podcastfeedhandler;
 
-import co.ntbl.podcastfeedhandler.Episode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 
 class PodcastTest {
     @Test void getAllEpisodesTestTal() {
-        InputStream is = getClass().getClassLoader().getResourceAsStream("tal.xml");
+        Podcast podcast = stringXmlToPodcastObject("tal.xml");
+        Assertions.assertNotEquals(podcast.getEpisodeList().size(), 0);
+    }
+
+    @Test public String getRawStringFromAssets(String filename) {
+        InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
         byte[] documentAsBytes;
         try {
             documentAsBytes = is.readAllBytes();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return new String(documentAsBytes, StandardCharsets.UTF_8);
+    }
+
+    @Test Podcast stringXmlToPodcastObject(String podcastFeed) {
+        String doc = getRawStringFromAssets(podcastFeed);
         PodcastFeedHandler classUnderTest = new PodcastFeedHandler();
         Podcast fromDoc;
         try {
-            fromDoc = classUnderTest.getPodcastFromDocument(new String(documentAsBytes));
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (PodcastFeedException e) {
+            fromDoc = classUnderTest.getPodcastFromDocument(doc);
+        } catch (MalformedURLException | PodcastFeedException e) {
             throw new RuntimeException(e);
         }
-        Assertions.assertNotEquals(fromDoc.getEpisodeList().size(), 0);
+        return fromDoc;
     }
 
     @Test void getAllEpisodesTestPm() {
-        InputStream is = getClass().getClassLoader().getResourceAsStream("planetmoney.xml");
-        byte[] documentAsBytes;
-        try {
-            documentAsBytes = is.readAllBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        String doc = getRawStringFromAssets("planetmoney.xml");
         PodcastFeedHandler classUnderTest = new PodcastFeedHandler();
         try {
-            Podcast fromDoc = classUnderTest.getPodcastFromDocument(new String(documentAsBytes));
+            Podcast fromDoc = classUnderTest.getPodcastFromDocument(doc);
         } catch (MalformedURLException | PodcastFeedException e) {
             throw new RuntimeException(e);
         }

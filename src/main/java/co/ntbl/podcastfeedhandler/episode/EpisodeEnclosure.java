@@ -7,7 +7,7 @@ import java.net.URL;
 
 public class EpisodeEnclosure {
     private URL url;
-    private Long length;
+    private Long length = -1L;
     private String mimeType;
 
     public EpisodeEnclosure(Node enclosureNode) throws MalformedURLException {

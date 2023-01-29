@@ -5,6 +5,8 @@ import org.w3c.dom.NodeList;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
@@ -53,5 +55,10 @@ public class Util {
         return dt.replace("Tues,", "Tue,")
                 .replace("Thurs,", "Thu,")
                 .replace("Wednes,", "Wed,");
+    }
+
+    public static String dateConversion(Date date) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US);
+        return dateFormatter.format(date);
     }
 }

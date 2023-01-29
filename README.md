@@ -7,7 +7,7 @@ A Java library to read and write podcast feeds. This library took a lot of inspi
 * No dependencies, 100% self contained and native code
 
 ## Progress
-Working on reading feeds, capturing all fields in a sample of feeds.
+Writing working, need to test. In reading then writing we seem to be stripping the CDATA[] wrapper.
 
 ## Installation
 

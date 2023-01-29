@@ -9,15 +9,13 @@ import java.net.URL;
 import java.util.*;
 
 public class Episode {
-    private String title, description, author, guid, sourceName;
+    private String title, description, guid, sourceName, copyright, contentEncoded;
     private URL link, comments, sourceLink;
 
     private String itunesDuration, itunesSubtitle, itunesSummary, itunesExplicit, itunesTitle, itunesEpisode,
-            itunesImage;
-    private List<String> categories;
+            itunesImage, itunesAuthor, itunesEpisodeType;
     private EpisodeEnclosure enclosure;
     private Date pubDate;
-    private String contentEncoded;
 
     private Map<String, List<String>> unknownFields = new HashMap<>();
 
@@ -39,13 +37,16 @@ public class Episode {
                     break;
                 case "author":
                 case "itunes:author":
-                    this.author = childrenNodes.item(i).getTextContent();
+                    this.itunesAuthor = childrenNodes.item(i).getTextContent();
                     break;
                 case "guid":
                     this.guid = childrenNodes.item(i).getTextContent();
                     break;
                 case "sourceName":
                     this.sourceName = childrenNodes.item(i).getTextContent();
+                    break;
+                case "copyright":
+                    this.copyright = childrenNodes.item(i).getTextContent();
                     break;
                 case "link":
                     this.link = new URL(childrenNodes.item(i).getTextContent());
@@ -83,6 +84,12 @@ public class Episode {
                 case "pubDate":
                     this.pubDate = Util.stringToDate(childrenNodes.item(i).getTextContent());
                     break;
+                case "itunes:episodeType":
+                    this.itunesEpisodeType = childrenNodes.item(i).getTextContent();
+                    break;
+                case "content:encoded":
+                    this.contentEncoded = childrenNodes.item(i).getTextContent();
+                    break;
                 default:
                     System.err.println(childrenNodes.item(i).getNodeName() + " not implemented in episode.");
                     if (unknownFields.containsKey(childrenNodes.item(i).getNodeName())) {
@@ -111,12 +118,20 @@ public class Episode {
         this.description = description;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getItunesImage() {
+        return itunesImage;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setItunesImage(String itunesImage) {
+        this.itunesImage = itunesImage;
+    }
+
+    public String getItunesAuthor() {
+        return itunesAuthor;
+    }
+
+    public void setItunesAuthor(String itunesAuthor) {
+        this.itunesAuthor = itunesAuthor;
     }
 
     public String getGuid() {
@@ -141,6 +156,14 @@ public class Episode {
 
     public void setLink(URL link) {
         this.link = link;
+    }
+
+    public String getCopyright() {
+        return copyright;
+    }
+
+    public void setCopyright(String copyright) {
+        this.copyright = copyright;
     }
 
     public URL getComments() {
@@ -181,14 +204,6 @@ public class Episode {
 
     public void setItunesSummary(String itunesSummary) {
         this.itunesSummary = itunesSummary;
-    }
-
-    public List<String> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(List<String> categories) {
-        this.categories = categories;
     }
 
     public EpisodeEnclosure getEnclosure() {
@@ -245,5 +260,13 @@ public class Episode {
 
     public void setItunesEpisode(String itunesEpisode) {
         this.itunesEpisode = itunesEpisode;
+    }
+
+    public String getItunesEpisodeType() {
+        return itunesEpisodeType;
+    }
+
+    public void setItunesEpisodeType(String itunesEpisodeType) {
+        this.itunesEpisodeType = itunesEpisodeType;
     }
 }

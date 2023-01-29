@@ -3,6 +3,7 @@ package co.ntbl.podcastfeedhandler;
 import co.ntbl.podcastfeedhandler.podcast.Image;
 import co.ntbl.podcastfeedhandler.podcast.MediaRestrictions;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -14,9 +15,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class PodcastFeedHandler {
+    public final static String VERSION = "0.1";
     private String feed;
 
     public PodcastFeedHandler() {
@@ -51,14 +54,22 @@ public class PodcastFeedHandler {
         }
 
         // We now know the feed follows the general Podcast / iTunes standard
-        Podcast podcast = parseFieldsInRootXml(rootNode);
 
-        System.out.println("Test read");
-        return podcast;
+        return parseFieldsInRootXml(rootNode);
     }
 
     private Podcast parseFieldsInRootXml(Node rootNode) throws MalformedURLException, PodcastFeedException {
         Podcast workingPodcast = new Podcast();
+        for (int i = 0; i < rootNode.getAttributes().getLength(); i++) {
+            if (rootNode.getAttributes().item(i).getNodeName().equals("xmlns:dc")
+                || rootNode.getAttributes().item(i).getNodeName().equals("xmlns:content")
+                || rootNode.getAttributes().item(i).getNodeName().equals("xmlns:itunes")) {
+                continue;
+            }
+            workingPodcast.getRssFormats().put(rootNode.getAttributes().item(i).getNodeName(),
+                    rootNode.getAttributes().item(i).getNodeValue());
+        }
+
         Node channel = Util.getChildNodeWithName(rootNode, "channel");
         if (channel == null) {
             //TODO throw an exception
@@ -121,7 +132,16 @@ public class PodcastFeedHandler {
                     workingPodcast.setItunesSubtitle(childrenNodes.item(i).getTextContent());
                     break;
                 case "itunes:owner":
-                    workingPodcast.setItunesOwner(childrenNodes.item(i).getTextContent());
+                    if (childrenNodes.item(i).hasChildNodes()) {
+                        for (int j = 0; j < childrenNodes.item(i).getChildNodes().getLength(); j++) {
+                            if (childrenNodes.item(i).getChildNodes().item(j).getNodeName().equals("#text")) {
+                                continue;
+                            }
+                            Node element = childrenNodes.item(i).getChildNodes().item(j);
+                            workingPodcast.getItunesOwner().put(childrenNodes.item(i).getChildNodes().item(j).getNodeName(),
+                                    childrenNodes.item(i).getChildNodes().item(j).getFirstChild().getTextContent());
+                        }
+                    }
                     break;
                 case "itunes:image":
                     workingPodcast.setItunesImage(childrenNodes.item(i).getAttributes().getNamedItem("href").getTextContent());

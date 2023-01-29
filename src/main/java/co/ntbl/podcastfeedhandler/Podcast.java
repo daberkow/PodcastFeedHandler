@@ -7,11 +7,14 @@ import java.util.*;
 
 public class Podcast {
     private String title, link, description, language, copyright, managingEditor, webMaster,
-            generator, picsRating, docsString, lastBuildDate;
+            generator, picsRating, docsString, lastBuildDate ;
 
-    private String itunesNewFeedUrl, itunesAuthor, itunesSubtitle, itunesOwner, itunesImage, itunesSummary, itunesBlock,
-            itunesType;
+    private String itunesNewFeedUrl, itunesAuthor, itunesSubtitle, itunesImage, itunesSummary, itunesBlock, itunesType;
     private List<String> itunesCategory;
+
+    private HashMap<String, String> rssFormats;
+
+    private HashMap<String, String> itunesOwner;
 
     private Date pubDate;
 
@@ -26,6 +29,16 @@ public class Podcast {
         itunesCategory = new ArrayList<>();
         unknownFields = new HashMap<>();
         episodeList = new ArrayList<>();
+        rssFormats = new HashMap<>();
+        itunesOwner = new HashMap<>();
+    }
+
+    public HashMap<String, String> getRssFormats() {
+        return rssFormats;
+    }
+
+    public void setRssFormats(HashMap<String, String> rssFormats) {
+        this.rssFormats = rssFormats;
     }
 
     public String getTitle() {
@@ -148,11 +161,12 @@ public class Podcast {
         this.itunesSubtitle = itunesSubtitle;
     }
 
-    public String getItunesOwner() {
+
+    public HashMap<String, String> getItunesOwner() {
         return itunesOwner;
     }
 
-    public void setItunesOwner(String itunesOwner) {
+    public void setItunesOwner(HashMap<String, String> itunesOwner) {
         this.itunesOwner = itunesOwner;
     }
 
