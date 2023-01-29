@@ -1,7 +1,7 @@
 package co.ntbl.podcastfeedhandler;
 
 import org.junit.jupiter.api.Test;
-import org.xmlunit.assertj3.XmlAssert;
+import org.xmlunit.assertj.XmlAssert;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -46,7 +46,10 @@ class PodcastFeedWriterTest {
         XmlAssert
             .assertThat(podcastFeedData)
             .and(returnedFeed)
-            .ignoreWhitespace().ignoreChildNodesOrder().ignoreElementContentWhitespace().areSimilar();
+            .ignoreWhitespace()
+            .ignoreChildNodesOrder()
+            .ignoreElementContentWhitespace()
+            .areSimilar();
     }
 
     @Test
@@ -74,9 +77,9 @@ class PodcastFeedWriterTest {
         }
 
 //        XmlAssert
-//                .assertThat(podcastTest.getRawStringFromAssets(xmlName))
-//                .and(returnedFeed)
-//                .ignoreWhitespace().ignoreChildNodesOrder().ignoreElementContentWhitespace().areSimilar();
+//            .assertThat(podcastTest.getRawStringFromAssets(xmlName))
+//            .and(returnedFeed)
+//            .ignoreWhitespace().ignoreChildNodesOrder().ignoreElementContentWhitespace().areSimilar();
     }
 
 }

@@ -275,6 +275,10 @@ public class PodcastFeedWriter {
                 itemElement.appendChild(createSingleElement(doc, "content:encoded", episode.getContentEncoded()));
             }
 
+            if (episode.getItunesBlock() != null) {
+                itemElement.appendChild(createSingleElement(doc, "itunes:block", episode.getItunesBlock()));
+            }
+
             channelRssElement.appendChild(itemElement);
         }));
     }

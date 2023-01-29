@@ -13,7 +13,7 @@ public class Episode {
     private URL link, comments, sourceLink;
 
     private String itunesDuration, itunesSubtitle, itunesSummary, itunesExplicit, itunesTitle, itunesEpisode,
-            itunesImage, itunesAuthor, itunesEpisodeType;
+            itunesImage, itunesAuthor, itunesEpisodeType, itunesBlock;
     private EpisodeEnclosure enclosure;
     private Date pubDate;
 
@@ -80,6 +80,9 @@ public class Episode {
                     break;
                 case "itunes:explicit":
                     this.itunesExplicit = childrenNodes.item(i).getTextContent();
+                    break;
+                case "itunes:block":
+                    this.itunesBlock = childrenNodes.item(i).getTextContent();
                     break;
                 case "pubDate":
                     this.pubDate = Util.stringToDate(childrenNodes.item(i).getTextContent());
@@ -268,5 +271,13 @@ public class Episode {
 
     public void setItunesEpisodeType(String itunesEpisodeType) {
         this.itunesEpisodeType = itunesEpisodeType;
+    }
+
+    public String getItunesBlock() {
+        return itunesBlock;
+    }
+
+    public void setItunesBlock(String itunesBlock) {
+        this.itunesBlock = itunesBlock;
     }
 }
