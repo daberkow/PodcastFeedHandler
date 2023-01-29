@@ -96,6 +96,7 @@ class PodcastFeedWriterTest {
         System.out.println("Generated feed");
         System.out.println(returnedFeed);
 
+        //Somehow this breaks on github workflows
         XmlAssert
             .assertThat(newParsedDoc)
             .and(returnedFeed)

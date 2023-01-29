@@ -11,6 +11,9 @@ targetCompatibility = 11
 group = 'co.ntbl.podcastfeedhandler'
 
 test {
+    minHeapSize = "256m" // initial heap size
+    maxHeapSize = "1024m" // maximum heap size
+    jvmArgs '-XX:MaxPermSize=2048m' // mem argument for the test JVM
     testLogging {
         // Make sure output from
         // standard out or error is shown
@@ -40,6 +43,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
     // https://mvnrepository.com/artifact/org.xmlunit/xmlunit-assertj3
     testImplementation group: 'org.xmlunit', name: 'xmlunit-assertj', version: '2.9.1'
+    testImplementation group: 'com.icosillion.podengine', name: 'podengine', version: '2.4.1'
 
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
