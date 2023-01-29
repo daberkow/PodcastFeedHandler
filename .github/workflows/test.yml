@@ -17,7 +17,7 @@ jobs:
     - name: Setup and execute Gradle 'test' task
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: test
+        arguments: test --debug
     - name: Upload build reports
       uses: actions/upload-artifact@v3
       if: always() # always run even if the previous step fails
