@@ -88,7 +88,7 @@ class PodcastFeedWriterTest {
         } catch (TransformerException e) {
             throw new RuntimeException(e);
         }
-        String newParsedDoc = writer.toString();
+        String newParsedDoc = writer2.toString();
 
         System.out.println("fixed theirs feed");
         System.out.println(newParsedDoc);
