@@ -29,4 +29,4 @@ jobs:
       if: always() # always run even if the previous step fails
       with:
         name: test-xmls
-        path: ${{ runner.temp }}/*.xml
+        path: /tmp/*.xml
