@@ -3,20 +3,22 @@ package co.ntbl.podcastfeedhandler;
 import co.ntbl.podcastfeedhandler.podcast.Image;
 import co.ntbl.podcastfeedhandler.podcast.MediaRestrictions;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 public class Podcast {
     private String title, link, description, language, copyright, managingEditor, webMaster,
-            generator, picsRating, docsString, lastBuildDate ;
+            generator, picsRating, docsString, lastBuildDate, docs, ttl ;
 
-    private String itunesNewFeedUrl, itunesAuthor, itunesSubtitle, itunesImage, itunesSummary, itunesBlock, itunesType;
-    private List<String> itunesCategory;
+    private String itunesNewFeedUrl, itunesAuthor, itunesSubtitle, itunesImage, itunesSummary, itunesBlock, itunesType,
+            itunesKeywords, itunesExplicit;
+    private List<String> itunesCategory, skipHours, skipDays;
 
-    private HashMap<String, String> rssFormats;
+    private HashMap<String, String> rssFormats, textInput, itunesOwner, cloud;
 
-    private HashMap<String, String> itunesOwner;
-
-    private Date pubDate;
+    private ZonedDateTime pubDate;
 
     private Image image;
 
@@ -27,10 +29,14 @@ public class Podcast {
 
     public Podcast() {
         itunesCategory = new ArrayList<>();
-        unknownFields = new HashMap<>();
+        skipDays = new ArrayList<>();
+        skipHours = new ArrayList<>();
         episodeList = new ArrayList<>();
+        unknownFields = new HashMap<>();
         rssFormats = new HashMap<>();
         itunesOwner = new HashMap<>();
+        textInput = new HashMap<>();
+        cloud = new HashMap<>();
     }
 
     public HashMap<String, String> getRssFormats() {
@@ -121,11 +127,11 @@ public class Podcast {
         this.docsString = docsString;
     }
 
-    public Date getPubDate() {
+    public ZonedDateTime getPubDate() {
         return pubDate;
     }
 
-    public void setPubDate(Date pubDate) {
+    public void setPubDate(ZonedDateTime pubDate) {
         this.pubDate = pubDate;
     }
 
@@ -240,5 +246,69 @@ public class Podcast {
 
     public void setImage(Image image) {
         this.image = image;
+    }
+
+    public String getDocs() {
+        return docs;
+    }
+
+    public void setDocs(String docs) {
+        this.docs = docs;
+    }
+
+    public String getTtl() {
+        return ttl;
+    }
+
+    public void setTtl(String ttl) {
+        this.ttl = ttl;
+    }
+
+    public String getItunesKeywords() {
+        return itunesKeywords;
+    }
+
+    public void setItunesKeywords(String itunesKeywords) {
+        this.itunesKeywords = itunesKeywords;
+    }
+
+    public String getItunesExplicit() {
+        return itunesExplicit;
+    }
+
+    public void setItunesExplicit(String itunesExplicit) {
+        this.itunesExplicit = itunesExplicit;
+    }
+
+    public List<String> getSkipHours() {
+        return skipHours;
+    }
+
+    public void setSkipHours(List<String> skipHours) {
+        this.skipHours = skipHours;
+    }
+
+    public List<String> getSkipDays() {
+        return skipDays;
+    }
+
+    public void setSkipDays(List<String> skipDays) {
+        this.skipDays = skipDays;
+    }
+
+    public HashMap<String, String> getTextInput() {
+        return textInput;
+    }
+
+    public void setTextInput(HashMap<String, String> textInput) {
+        this.textInput = textInput;
+    }
+
+    public HashMap<String, String> getCloud() {
+        return cloud;
+    }
+
+    public void setCloud(HashMap<String, String> cloud) {
+        this.cloud = cloud;
     }
 }

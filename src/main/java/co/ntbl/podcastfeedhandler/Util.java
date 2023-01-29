@@ -6,7 +6,11 @@ import org.w3c.dom.NodeList;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.FormatStyle;
 import java.util.Date;
 import java.util.Locale;
 
@@ -27,23 +31,24 @@ public class Util {
      * @param dt string of date
      * @return Java date Object
      */
-    public static Date stringToDate(String dt) {
-        SimpleDateFormat[] dateFormats = {
-                new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US),
-                new SimpleDateFormat("dd MMM yyyy HH:mm:ss Z", Locale.US),
-                new SimpleDateFormat("EEE, dd MMM yyyy HH:mm Z", Locale.US),
-                new SimpleDateFormat("dd MMM yyyy HH:mm Z", Locale.US)
+    public static ZonedDateTime stringToDate(String dt) {
+        DateTimeFormatter [] dateFormats = {
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US),
+                DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss Z", Locale.US),
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm Z", Locale.US),
+                DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm Z", Locale.US),
+                DateTimeFormatter.RFC_1123_DATE_TIME
         };
 
         String normalizedDt = normalize(dt);
 
-        Date date = null;
+        ZonedDateTime date = null;
 
-        for (SimpleDateFormat dateFormat : dateFormats) {
+        for (DateTimeFormatter dateFormat : dateFormats) {
             try {
-                date = dateFormat.parse(normalizedDt);
+                date = ZonedDateTime.parse(normalizedDt, dateFormat);
                 break;
-            } catch (ParseException e) {
+            } catch (DateTimeParseException e) {
                 //This format didn't work, keep going
             }
         }
@@ -57,8 +62,10 @@ public class Util {
                 .replace("Wednes,", "Wed,");
     }
 
-    public static String dateConversion(Date date) {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US);
-        return dateFormatter.format(date);
+    public static String dateConversion(ZonedDateTime date) {
+        DateTimeFormatter dt = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+        String dateInfo =  date.format(DateTimeFormatter.RFC_1123_DATE_TIME);
+        System.out.println(dateInfo);
+        return dateInfo;
     }
 }

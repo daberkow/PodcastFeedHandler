@@ -51,6 +51,14 @@ public class PodcastFeedWriter {
             channelRssElement.appendChild(createSingleElement(doc, "copyright", podcast.getCopyright()));
         }
 
+        if (podcast.getManagingEditor() != null) {
+            channelRssElement.appendChild(createSingleElement(doc, "managingEditor", podcast.getManagingEditor()));
+        }
+
+        if (podcast.getWebMaster() != null) {
+            channelRssElement.appendChild(createSingleElement(doc, "webMaster", podcast.getWebMaster()));
+        }
+
         if (podcast.getItunesNewFeedUrl() != null) {
             channelRssElement.appendChild(createSingleElement(doc, "itunes:new-feed-url", podcast.getItunesNewFeedUrl()));
         }
@@ -142,6 +150,61 @@ public class PodcastFeedWriter {
                 mediaRestrictions.appendChild(temp);
             }
             channelRssElement.appendChild(mediaRestrictions);
+        }
+
+        if (podcast.getDocs() != null) {
+            channelRssElement.appendChild(createSingleElement(doc, "docs", podcast.getDocs()));
+        }
+
+        if (podcast.getTtl() != null) {
+            channelRssElement.appendChild(createSingleElement(doc, "ttl", podcast.getTtl()));
+        }
+
+        if (podcast.getSkipHours().size() > 0) {
+            Element skipHours = doc.createElement("skipHours");
+            podcast.getSkipHours().forEach((k) -> {
+                Element itunesTempHour = doc.createElement("hour");
+                itunesTempHour.setTextContent(k);
+                skipHours.appendChild(itunesTempHour);
+            });
+            channelRssElement.appendChild(skipHours);
+        }
+
+        if (podcast.getSkipDays().size() > 0) {
+            Element skipHours = doc.createElement("skipDays");
+            podcast.getSkipDays().forEach((k) -> {
+                Element itunesTempHour = doc.createElement("day");
+                itunesTempHour.setTextContent(k);
+                skipHours.appendChild(itunesTempHour);
+            });
+            channelRssElement.appendChild(skipHours);
+        }
+
+        if (podcast.getTextInput().size() > 0) {
+            Element textInput = doc.createElement("textInput");
+            podcast.getTextInput().forEach((k ,v) -> {
+                Element itunesTemp = doc.createElement(k);
+                itunesTemp.setTextContent(v);
+                textInput.appendChild(itunesTemp);
+            });
+            channelRssElement.appendChild(textInput);
+        }
+        if (podcast.getCloud().size() > 0) {
+            Element textInput = doc.createElement("cloud");
+            podcast.getCloud().forEach(textInput::setAttribute);
+            channelRssElement.appendChild(textInput);
+        }
+
+        if (podcast.getItunesKeywords() != null) {
+            channelRssElement.appendChild(createSingleElement(doc, "itunes:keywords", podcast.getItunesKeywords()));
+        }
+
+        if (podcast.getItunesExplicit() != null) {
+            channelRssElement.appendChild(createSingleElement(doc, "itunes:explicit", podcast.getItunesExplicit()));
+        }
+
+        if (podcast.getPubDate() != null) {
+            channelRssElement.appendChild(createSingleElement(doc, "pubDate", Util.dateConversion(podcast.getPubDate())));
         }
 
         LocalDateTime time = LocalDateTime.now();
@@ -277,6 +340,31 @@ public class PodcastFeedWriter {
 
             if (episode.getItunesBlock() != null) {
                 itemElement.appendChild(createSingleElement(doc, "itunes:block", episode.getItunesBlock()));
+            }
+
+            if (!episode.getCategory().isEmpty()) {
+                episode.getCategory().forEach((k) -> {
+                    itemElement.appendChild(createSingleElement(doc, "category", k));
+                });
+            }
+
+            if (episode.getSourceName() != null && episode.getSourceLink() != null) {
+                Element titleElement = doc.createElement("source");
+                titleElement.setTextContent(episode.getSourceName());
+                titleElement.setAttribute("url", episode.getSourceLink().toString());
+                itemElement.appendChild(titleElement);
+            }
+
+            if (episode.getItunesIsClosedCaptioned() != null) {
+                itemElement.appendChild(createSingleElement(doc, "itunes:isClosedCaptioned", episode.getItunesIsClosedCaptioned()));
+            }
+
+            if (episode.getItunesOrder() != null) {
+                itemElement.appendChild(createSingleElement(doc, "itunes:order", episode.getItunesOrder()));
+            }
+
+            if (episode.getItunesSeason() != null) {
+                itemElement.appendChild(createSingleElement(doc, "itunes:season", episode.getItunesSeason()));
             }
 
             channelRssElement.appendChild(itemElement);

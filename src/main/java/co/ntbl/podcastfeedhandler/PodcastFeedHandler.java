@@ -177,7 +177,55 @@ public class PodcastFeedHandler {
                     }
                     workingPodcast.setMediaRestrictions(new MediaRestrictions(attributes, childrenNodes.item(i).getTextContent()));
                     break;
-                    // Stopped here, we need to implement a lot of the fields in NPR feed.
+                case "docs":
+                    workingPodcast.setDocs(childrenNodes.item(i).getTextContent());
+                    break;
+                case "ttl":
+                    workingPodcast.setTtl(childrenNodes.item(i).getTextContent());
+                    break;
+                case "skipHours":
+                    if (childrenNodes.item(i).hasChildNodes()) {
+                        for (int j = 0; j < childrenNodes.item(i).getChildNodes().getLength(); j++) {
+                            if (childrenNodes.item(i).getChildNodes().item(j).getNodeName().equals("#text")) {
+                                continue;
+                            }
+                            workingPodcast.getSkipHours().add(childrenNodes.item(i).getChildNodes().item(j).getFirstChild().getTextContent());
+                        }
+                    }
+                    break;
+                case "skipDays":
+                    if (childrenNodes.item(i).hasChildNodes()) {
+                        for (int j = 0; j < childrenNodes.item(i).getChildNodes().getLength(); j++) {
+                            if (childrenNodes.item(i).getChildNodes().item(j).getNodeName().equals("#text")) {
+                                continue;
+                            }
+                            workingPodcast.getSkipDays().add(childrenNodes.item(i).getChildNodes().item(j).getFirstChild().getTextContent());
+                        }
+                    }
+                    break;
+                case "textInput":
+                    if (childrenNodes.item(i).hasChildNodes()) {
+                        for (int j = 0; j < childrenNodes.item(i).getChildNodes().getLength(); j++) {
+                            if (childrenNodes.item(i).getChildNodes().item(j).getNodeName().equals("#text")) {
+                                continue;
+                            }
+                            workingPodcast.getTextInput().put(childrenNodes.item(i).getChildNodes().item(j).getNodeName(),
+                                    childrenNodes.item(i).getChildNodes().item(j).getFirstChild().getTextContent());
+                        }
+                    }
+                    break;
+                case "cloud":
+                    for (int x = 0; x < childrenNodes.item(i).getAttributes().getLength(); x++) {
+                        workingPodcast.getCloud().put(childrenNodes.item(i).getAttributes().item(x).getNodeName(),
+                                childrenNodes.item(i).getAttributes().item(x).getNodeValue());
+                    }
+                    break;
+                case "itunes:keywords":
+                    workingPodcast.setItunesKeywords(childrenNodes.item(i).getTextContent());
+                    break;
+                case "itunes:explicit":
+                    workingPodcast.setItunesExplicit(childrenNodes.item(i).getTextContent());
+                    break;
                 case"item":
                     Episode parsedEpisode = new Episode(childrenNodes.item(i));
                     episodes.add(parsedEpisode);

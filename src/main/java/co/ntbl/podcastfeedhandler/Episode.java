@@ -6,6 +6,8 @@ import org.w3c.dom.NodeList;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 public class Episode {
@@ -13,9 +15,12 @@ public class Episode {
     private URL link, comments, sourceLink;
 
     private String itunesDuration, itunesSubtitle, itunesSummary, itunesExplicit, itunesTitle, itunesEpisode,
-            itunesImage, itunesAuthor, itunesEpisodeType, itunesBlock;
+            itunesImage, itunesAuthor, itunesEpisodeType, itunesBlock, itunesIsClosedCaptioned, itunesOrder,
+            itunesSeason;
+
+    private List<String> category = new ArrayList<>(); //Apparently there can be multiple
     private EpisodeEnclosure enclosure;
-    private Date pubDate;
+    private ZonedDateTime pubDate;
 
     private Map<String, List<String>> unknownFields = new HashMap<>();
 
@@ -42,9 +47,6 @@ public class Episode {
                 case "guid":
                     this.guid = childrenNodes.item(i).getTextContent();
                     break;
-                case "sourceName":
-                    this.sourceName = childrenNodes.item(i).getTextContent();
-                    break;
                 case "copyright":
                     this.copyright = childrenNodes.item(i).getTextContent();
                     break;
@@ -54,8 +56,9 @@ public class Episode {
                 case "comments":
                     this.comments = new URL(childrenNodes.item(i).getTextContent());
                     break;
-                case "sourceLink":
-                    this.sourceLink = new URL(childrenNodes.item(i).getTextContent());
+                case "source":
+                    this.sourceLink = new URL(childrenNodes.item(i).getAttributes().getNamedItem("url").getTextContent());
+                    this.sourceName = childrenNodes.item(i).getTextContent();
                     break;
                 case "enclosure":
                     this.enclosure = new EpisodeEnclosure(childrenNodes.item(i));
@@ -93,12 +96,25 @@ public class Episode {
                 case "content:encoded":
                     this.contentEncoded = childrenNodes.item(i).getTextContent();
                     break;
+                case "category":
+                    this.category.add(childrenNodes.item(i).getTextContent());
+                    break;
+                case "itunes:isClosedCaptioned":
+                    this.itunesIsClosedCaptioned = childrenNodes.item(i).getTextContent();
+                    break;
+                case "itunes:order":
+                    this.itunesOrder = childrenNodes.item(i).getTextContent();
+                    break;
+                case "itunes:season":
+                    this.itunesSeason = childrenNodes.item(i).getTextContent();
+                    break;
                 default:
                     System.err.println(childrenNodes.item(i).getNodeName() + " not implemented in episode.");
                     if (unknownFields.containsKey(childrenNodes.item(i).getNodeName())) {
                         unknownFields.get(childrenNodes.item(i).getNodeName()).add(childrenNodes.item(i).toString());
                     } else {
-                        unknownFields.put(childrenNodes.item(i).getNodeName(), Collections.singletonList(childrenNodes.item(i).toString()));
+                        unknownFields.put(childrenNodes.item(i).getNodeName(), new ArrayList<>());
+                        unknownFields.get(childrenNodes.item(i).getNodeName()).add(childrenNodes.item(i).toString());
                     }
                     break;
             }
@@ -217,11 +233,11 @@ public class Episode {
         this.enclosure = enclosure;
     }
 
-    public Date getPubDate() {
+    public ZonedDateTime getPubDate() {
         return pubDate;
     }
 
-    public void setPubDate(Date pubDate) {
+    public void setPubDate(ZonedDateTime pubDate) {
         this.pubDate = pubDate;
     }
 
@@ -279,5 +295,37 @@ public class Episode {
 
     public void setItunesBlock(String itunesBlock) {
         this.itunesBlock = itunesBlock;
+    }
+
+    public String getItunesIsClosedCaptioned() {
+        return itunesIsClosedCaptioned;
+    }
+
+    public void setItunesIsClosedCaptioned(String itunesIsClosedCaptioned) {
+        this.itunesIsClosedCaptioned = itunesIsClosedCaptioned;
+    }
+
+    public String getItunesOrder() {
+        return itunesOrder;
+    }
+
+    public void setItunesOrder(String itunesOrder) {
+        this.itunesOrder = itunesOrder;
+    }
+
+    public String getItunesSeason() {
+        return itunesSeason;
+    }
+
+    public void setItunesSeason(String itunesSeason) {
+        this.itunesSeason = itunesSeason;
+    }
+
+    public List<String> getCategory() {
+        return category;
+    }
+
+    public void setCategory(List<String> category) {
+        this.category = category;
     }
 }
