@@ -12,17 +12,15 @@ jobs:
       with:
         distribution: temurin
         java-version: 11
-
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
-
     - name: Setup and execute Gradle 'test' task
       uses: gradle/gradle-build-action@v2
       with:
         arguments: test
-
     - name: Upload build reports
       uses: actions/upload-artifact@v3
+      if: always() # always run even if the previous step fails
       with:
         name: build-reports
         path: build/reports/
