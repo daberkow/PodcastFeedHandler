@@ -19,8 +19,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PodEngineTestsWithThisLibrary {
     private com.icosillion.podengine.models.Podcast podcast;
 
+    /**
+     * This test takes the original podengine feed, then parses it, and regenerates it. Then checks against that.
+     * @throws MalformedFeedException
+     */
     @BeforeEach
-    public void setup() throws IOException, InvalidFeedException, MalformedFeedException {
+    public void setup() throws MalformedFeedException {
         PodcastTest podcastTest = new PodcastTest();
         String originalPodcastFeed = podcastTest.getRawStringFromAssets("podengine.xml");
         PodcastFeedHandler classUnderTest = new PodcastFeedHandler();

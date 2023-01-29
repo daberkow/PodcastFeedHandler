@@ -3,15 +3,9 @@ package co.ntbl.podcastfeedhandler;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.format.FormatStyle;
-import java.util.Date;
 import java.util.Locale;
 
 public class Util {
@@ -64,8 +58,6 @@ public class Util {
 
     public static String dateConversion(ZonedDateTime date) {
         DateTimeFormatter dt = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-        String dateInfo =  date.format(DateTimeFormatter.RFC_1123_DATE_TIME);
-        System.out.println(dateInfo);
-        return dateInfo;
+        return date.format(DateTimeFormatter.RFC_1123_DATE_TIME);
     }
 }
