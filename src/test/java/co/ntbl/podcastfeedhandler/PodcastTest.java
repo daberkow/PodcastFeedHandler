@@ -3,13 +3,12 @@
  */
 package co.ntbl.podcastfeedhandler;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class PodcastTest {
     @Test void getAllEpisodesTestTal() {

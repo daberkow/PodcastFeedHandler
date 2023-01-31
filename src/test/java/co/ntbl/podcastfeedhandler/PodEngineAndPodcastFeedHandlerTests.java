@@ -1,30 +1,35 @@
 package co.ntbl.podcastfeedhandler;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.icosillion.podengine.exceptions.DateFormatException;
-import com.icosillion.podengine.exceptions.InvalidFeedException;
 import com.icosillion.podengine.exceptions.MalformedFeedException;
-import com.icosillion.podengine.models.*;
+import com.icosillion.podengine.models.CloudInfo;
+import com.icosillion.podengine.models.ITunesChannelInfo;
+import com.icosillion.podengine.models.ITunesInfo;
+import com.icosillion.podengine.models.ITunesOwner;
+import com.icosillion.podengine.models.TextInputInfo;
 import com.icosillion.podengine.utils.DateUtils;
+import java.net.MalformedURLException;
+import java.util.Set;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-public class PodEngineTestsWithThisLibrary {
+public class PodEngineAndPodcastFeedHandlerTests {
     private com.icosillion.podengine.models.Podcast podcast;
 
     /**
      * This test takes the original podengine feed, then parses it, and regenerates it. Then checks against that.
-     * @throws MalformedFeedException
+     * @throws MalformedFeedException Xml feed error
      */
     @BeforeEach
-    public void setup() throws MalformedFeedException {
+    public void before() throws MalformedFeedException {
         PodcastTest podcastTest = new PodcastTest();
         String originalPodcastFeed = podcastTest.getRawStringFromAssets("podengine.xml");
         PodcastFeedHandler classUnderTest = new PodcastFeedHandler();
@@ -78,7 +83,8 @@ public class PodEngineTestsWithThisLibrary {
         assertTrue(skipDays.contains("Monday"));
         assertTrue(skipDays.contains("Wednesday"));
         assertTrue(skipDays.contains("Friday"));
-        assertArrayEquals(new String[] { "podcast", "java", "xml", "dom4j", "icosillion", "maven" } , podcast.getKeywords());
+        assertArrayEquals(new String[] { "podcast", "java", "xml", "dom4j", "icosillion", "maven" },
+                podcast.getKeywords());
         assertEquals(2, podcast.getEpisodes().size());
     }
 
@@ -97,7 +103,7 @@ public class PodEngineTestsWithThisLibrary {
         assertEquals("Icosillion", iTunesInfo.getAuthor());
         assertEquals("A dummy podcast feed for testing the Podcast Feed Library.", iTunesInfo.getSubtitle());
         assertEquals("This podcast brings testing capabilities to the Podcast Feed Library", iTunesInfo.getSummary());
-        assertEquals(false, iTunesInfo.isBlocked());
+        assertFalse(iTunesInfo.isBlocked());
         assertEquals(ITunesInfo.ExplicitLevel.CLEAN, iTunesInfo.getExplicit());
         assertEquals("https://podcast-feed-library.owl.im/images/artwork.png", iTunesInfo.getImage().toString());
         assertEquals(ITunesChannelInfo.FeedType.SERIAL, iTunesInfo.getType());

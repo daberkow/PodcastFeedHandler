@@ -1,15 +1,5 @@
 package co.ntbl.podcastfeedhandler;
 
-import org.junit.jupiter.api.Test;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -17,10 +7,24 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 class PodcastFeedWriterTest {
     @Test
-    void TestWriteTal() {
+    void testWriteTal() {
         String xmlName = "tal.xml";
         PodcastTest podcastTest = new PodcastTest();
         String originalPodcastFeed = podcastTest.getRawStringFromAssets(xmlName);
@@ -94,9 +98,7 @@ class PodcastFeedWriterTest {
 //        System.out.println("Generated feed");
 //        System.out.println(returnedFeed);
 
-
-
-        //Somehow this breaks on github workflows
+        //Somehow this breaks on github actions
 //        XmlAssert
 //            .assertThat(newParsedDoc)
 //            .and(returnedFeed)
@@ -107,7 +109,7 @@ class PodcastFeedWriterTest {
     }
 
     @Test
-    void TestWritePm() {
+    void testWritePm() {
         String xmlName = "planetmoney.xml";
         PodcastTest podcastTest = new PodcastTest();
         Podcast podcast = podcastTest.stringXmlToPodcastObject(xmlName);
