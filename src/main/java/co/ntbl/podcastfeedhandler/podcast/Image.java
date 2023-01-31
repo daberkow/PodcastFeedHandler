@@ -1,22 +1,24 @@
 package co.ntbl.podcastfeedhandler.podcast;
 
-import org.w3c.dom.Node;
-
 import java.net.MalformedURLException;
 import java.net.URL;
+import org.w3c.dom.Node;
 
+/**
+ * This covers the image tags, these images are photos, album covers for episodes or feeds.
+ */
 public class Image {
     private URL url, link;
     private String title;
 
     public Image(Node enclosureNode) throws MalformedURLException {
         for (int i = 0; i < enclosureNode.getChildNodes().getLength(); i++) {
-            switch (enclosureNode.getChildNodes().item(i).getNodeName()){
+            switch (enclosureNode.getChildNodes().item(i).getNodeName()) {
                 case "url":
                     this.url = new URL(enclosureNode.getChildNodes().item(i).getTextContent());
                     break;
                 case "title":
-                    this.title =enclosureNode.getChildNodes().item(i).getTextContent();
+                    this.title = enclosureNode.getChildNodes().item(i).getTextContent();
                     break;
                 case "link":
                     this.link = new URL(enclosureNode.getChildNodes().item(i).getTextContent());

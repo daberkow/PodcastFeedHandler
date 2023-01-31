@@ -1,14 +1,15 @@
 package co.ntbl.podcastfeedhandler;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class Util {
+    private Util() {
+    }
 
     public static Node getChildNodeWithName(Node root, String childName) {
         NodeList childrenNodes = root.getChildNodes();

@@ -1,15 +1,19 @@
 package co.ntbl.podcastfeedhandler;
 
 import co.ntbl.podcastfeedhandler.episode.EpisodeEnclosure;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.*;
-
+/**
+ * Podcast episode.
+ */
 public class Episode {
     private String title, description, guid, sourceName, copyright, contentEncoded;
     private URL link, comments, sourceLink;
@@ -24,9 +28,18 @@ public class Episode {
 
     private Map<String, List<String>> unknownFields = new HashMap<>();
 
+    /**
+     * A blank episode type, this can be used when making your own feeds, but be careful of nulls.
+     */
     public Episode() {
     }
 
+    /**
+     * Create a episode from an XML node of a single "item".
+     * @param enclosureNode XML Element
+     * @throws MalformedURLException failure to parse expected fields
+     */
+    @SuppressWarnings("BanSystemErr")
     public Episode(Node enclosureNode) throws MalformedURLException {
         NodeList childrenNodes = enclosureNode.getChildNodes();
         for (int i = 0; i < childrenNodes.getLength(); i++) {
@@ -57,7 +70,8 @@ public class Episode {
                     this.comments = new URL(childrenNodes.item(i).getTextContent());
                     break;
                 case "source":
-                    this.sourceLink = new URL(childrenNodes.item(i).getAttributes().getNamedItem("url").getTextContent());
+                    this.sourceLink = new URL(
+                            childrenNodes.item(i).getAttributes().getNamedItem("url").getTextContent());
                     this.sourceName = childrenNodes.item(i).getTextContent();
                     break;
                 case "enclosure":

@@ -1,20 +1,27 @@
 package co.ntbl.podcastfeedhandler.episode;
 
-import org.w3c.dom.Node;
-
 import java.net.MalformedURLException;
 import java.net.URL;
+import org.w3c.dom.Node;
 
+/**
+ * This class is for the per episode "enclosure", this is the actual download reference for a podcast file.
+ */
+@SuppressWarnings("DesignForExtension")
 public class EpisodeEnclosure {
     private URL url;
     private Long length = -1L;
     private String mimeType;
 
+    /**
+     * From example feeds I have, length is an optional field.
+     *
+     * @param enclosureNode The XML node of the enclosure element.
+     * @throws MalformedURLException if failure to parse the correct attribute
+     */
     public EpisodeEnclosure(Node enclosureNode) throws MalformedURLException {
-        // <enclosure url="https://dts.podtrac.com/redirect.mp3/chtbl.com/track/8DB4DB/pdst.fm/e/nyt.simplecastaudio.com/bbbcc290-ed3b-44a2-8e5d-5513e38cfe20/episodes/7ac9d0b2-7669-4abd-9ffb-624f4ff7b0d8/audio/128/default.mp3?awCollectionId=bbbcc290-ed3b-44a2-8e5d-5513e38cfe20&amp;awEpisodeId=7ac9d0b2-7669-4abd-9ffb-624f4ff7b0d8"
-        //                       type="audio/mpeg" />
         for (int i = 0; i < enclosureNode.getAttributes().getLength(); i++) {
-            switch (enclosureNode.getAttributes().item(i).getNodeName()){
+            switch (enclosureNode.getAttributes().item(i).getNodeName()) {
                 case "url":
                     this.url = new URL(enclosureNode.getAttributes().item(i).getTextContent());
                     break;

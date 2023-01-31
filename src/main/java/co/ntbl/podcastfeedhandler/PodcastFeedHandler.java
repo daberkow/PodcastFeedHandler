@@ -2,31 +2,32 @@ package co.ntbl.podcastfeedhandler;
 
 import co.ntbl.podcastfeedhandler.podcast.Image;
 import co.ntbl.podcastfeedhandler.podcast.MediaRestrictions;
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-
 public class PodcastFeedHandler {
-    public final static String VERSION = "0.1";
+    public static final String VERSION = "0.1.0";
     private String feed;
 
     public PodcastFeedHandler() {
     }
 
-    public PodcastFeedHandler initFromFeed(String feed) {
-        this.feed = feed;
+    public PodcastFeedHandler initFromFeed(String importingFeed) {
+        this.feed = importingFeed;
         return this;
     }
 
@@ -58,12 +59,13 @@ public class PodcastFeedHandler {
         return parseFieldsInRootXml(rootNode);
     }
 
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:MethodLength", "BanSystemErr"})
     private Podcast parseFieldsInRootXml(Node rootNode) throws MalformedURLException, PodcastFeedException {
         Podcast workingPodcast = new Podcast();
         for (int i = 0; i < rootNode.getAttributes().getLength(); i++) {
             if (rootNode.getAttributes().item(i).getNodeName().equals("xmlns:dc")
-                || rootNode.getAttributes().item(i).getNodeName().equals("xmlns:content")
-                || rootNode.getAttributes().item(i).getNodeName().equals("xmlns:itunes")) {
+                    || rootNode.getAttributes().item(i).getNodeName().equals("xmlns:content")
+                    || rootNode.getAttributes().item(i).getNodeName().equals("xmlns:itunes")) {
                 continue;
             }
             workingPodcast.getRssFormats().put(rootNode.getAttributes().item(i).getNodeName(),
@@ -72,7 +74,6 @@ public class PodcastFeedHandler {
 
         Node channel = Util.getChildNodeWithName(rootNode, "channel");
         if (channel == null) {
-            //TODO throw an exception
             throw new PodcastFeedException("Missing channels element.");
         }
 
@@ -138,7 +139,8 @@ public class PodcastFeedHandler {
                                 continue;
                             }
                             Node element = childrenNodes.item(i).getChildNodes().item(j);
-                            workingPodcast.getItunesOwner().put(childrenNodes.item(i).getChildNodes().item(j).getNodeName(),
+                            workingPodcast.getItunesOwner().put(
+                                    childrenNodes.item(i).getChildNodes().item(j).getNodeName(),
                                     childrenNodes.item(i).getChildNodes().item(j).getFirstChild().getTextContent());
                         }
                     }
@@ -154,7 +156,8 @@ public class PodcastFeedHandler {
                                 continue;
                             }
                             workingPodcast.getItunesCategory().add(tempString + "|"
-                                    + childrenNodes.item(i).getChildNodes().item(j).getAttributes().getNamedItem("text").getTextContent());
+                                    + childrenNodes.item(i).getChildNodes()
+                                    .item(j).getAttributes().getNamedItem("text").getTextContent());
                         }
                     } else {
                         workingPodcast.getItunesCategory().add(tempString);
@@ -175,7 +178,8 @@ public class PodcastFeedHandler {
                         attributes.put(childrenNodes.item(i).getAttributes().item(j).getNodeName(),
                                 childrenNodes.item(i).getAttributes().item(j).getNodeValue());
                     }
-                    workingPodcast.setMediaRestrictions(new MediaRestrictions(attributes, childrenNodes.item(i).getTextContent()));
+                    workingPodcast.setMediaRestrictions(
+                            new MediaRestrictions(attributes, childrenNodes.item(i).getTextContent()));
                     break;
                 case "docs":
                     workingPodcast.setDocs(childrenNodes.item(i).getTextContent());
@@ -189,7 +193,8 @@ public class PodcastFeedHandler {
                             if (childrenNodes.item(i).getChildNodes().item(j).getNodeName().equals("#text")) {
                                 continue;
                             }
-                            workingPodcast.getSkipHours().add(childrenNodes.item(i).getChildNodes().item(j).getFirstChild().getTextContent());
+                            workingPodcast.getSkipHours().add(
+                                    childrenNodes.item(i).getChildNodes().item(j).getFirstChild().getTextContent());
                         }
                     }
                     break;
@@ -199,7 +204,8 @@ public class PodcastFeedHandler {
                             if (childrenNodes.item(i).getChildNodes().item(j).getNodeName().equals("#text")) {
                                 continue;
                             }
-                            workingPodcast.getSkipDays().add(childrenNodes.item(i).getChildNodes().item(j).getFirstChild().getTextContent());
+                            workingPodcast.getSkipDays().add(
+                                    childrenNodes.item(i).getChildNodes().item(j).getFirstChild().getTextContent());
                         }
                     }
                     break;
@@ -209,7 +215,8 @@ public class PodcastFeedHandler {
                             if (childrenNodes.item(i).getChildNodes().item(j).getNodeName().equals("#text")) {
                                 continue;
                             }
-                            workingPodcast.getTextInput().put(childrenNodes.item(i).getChildNodes().item(j).getNodeName(),
+                            workingPodcast.getTextInput().put(
+                                    childrenNodes.item(i).getChildNodes().item(j).getNodeName(),
                                     childrenNodes.item(i).getChildNodes().item(j).getFirstChild().getTextContent());
                         }
                     }
@@ -226,15 +233,17 @@ public class PodcastFeedHandler {
                 case "itunes:explicit":
                     workingPodcast.setItunesExplicit(childrenNodes.item(i).getTextContent());
                     break;
-                case"item":
+                case "item":
                     Episode parsedEpisode = new Episode(childrenNodes.item(i));
                     episodes.add(parsedEpisode);
                     break;
                 default:
                     if (workingPodcast.getUnknownFields().containsKey(childrenNodes.item(i).getNodeName())) {
-                        workingPodcast.getUnknownFields().get(childrenNodes.item(i).getNodeName()).add(childrenNodes.item(i).toString());
+                        workingPodcast.getUnknownFields().get(
+                                childrenNodes.item(i).getNodeName()).add(childrenNodes.item(i).toString());
                     } else {
-                        workingPodcast.getUnknownFields().put(childrenNodes.item(i).getNodeName(), Collections.singletonList(childrenNodes.item(i).toString()));
+                        workingPodcast.getUnknownFields().put(childrenNodes.item(i).getNodeName(),
+                                Collections.singletonList(childrenNodes.item(i).toString()));
                     }
                     System.err.println(childrenNodes.item(i).getNodeName() + " not implemented in podcast feed.");
                     //Throw here when ready for production
@@ -246,6 +255,7 @@ public class PodcastFeedHandler {
         return workingPodcast;
     }
 
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     private boolean podcastXmlValidator(Node rootNode) {
         if (!rootNode.getNodeName().equals("rss")) {
             return false;

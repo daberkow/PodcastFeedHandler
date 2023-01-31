@@ -7,12 +7,24 @@ A Java library to read and write podcast feeds. This library took a lot of inspi
 * No dependencies, 100% self contained and native code
 
 ## Progress
-Writing working, need to test. In reading then writing we seem to be stripping the CDATA[] wrapper.
-
-## Installation
+Reading in seems to work well, need to test more. Then work on writing feeds. That should work but has not been tested.
 
 
 ## Getting Started
+### Installation
+
 ### Reading a feed
+
+```
+String doc = getRawStringFromAssets("planetmoney.xml");
+PodcastFeedHandler podcastFeedHandler = new PodcastFeedHandler();
+
+Podcast fromDoc;
+try {
+    fromDoc = podcastFeedHandler.getPodcastFromDocument(doc);
+} catch (MalformedURLException | PodcastFeedException e) {
+    throw new RuntimeException(e);
+}
+```
 
 ### Writing a feed

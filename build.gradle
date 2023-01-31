@@ -3,7 +3,11 @@ plugins {
     id 'java-library'
     id 'idea'
     id "com.github.ben-manes.versions" version "0.44.0"
+    id 'maven-publish'
+    id 'checkstyle'
 }
+
+version project.hasProperty('version') ? version : '0.1.0'
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -55,4 +59,25 @@ dependencies {
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+publishing {
+    repositories {
+//        maven {
+//            name = "OSSRH"
+//            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+//            credentials {
+//                username = System.getenv("MAVEN_USERNAME")
+//                password = System.getenv("MAVEN_PASSWORD")
+//            }
+//        }
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/daberkow/PodcastFeedHandler"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
 }

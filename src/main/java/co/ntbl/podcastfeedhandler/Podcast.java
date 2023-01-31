@@ -2,21 +2,21 @@ package co.ntbl.podcastfeedhandler;
 
 import co.ntbl.podcastfeedhandler.podcast.Image;
 import co.ntbl.podcastfeedhandler.podcast.MediaRestrictions;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Podcast {
     private String title, link, description, language, copyright, managingEditor, webMaster,
-            generator, picsRating, docsString, lastBuildDate, docs, ttl ;
+            generator, picsRating, docsString, lastBuildDate, docs, ttl;
 
     private String itunesNewFeedUrl, itunesAuthor, itunesSubtitle, itunesImage, itunesSummary, itunesBlock, itunesType,
             itunesKeywords, itunesExplicit;
     private List<String> itunesCategory, skipHours, skipDays;
 
-    private HashMap<String, String> rssFormats, textInput, itunesOwner, cloud;
+    private Map<String, String> rssFormats, textInput, itunesOwner, cloud;
 
     private ZonedDateTime pubDate;
 
@@ -27,6 +27,9 @@ public class Podcast {
     private Map<String, List<String>> unknownFields;
     private List<Episode> episodeList;
 
+    /**
+     * A blank podcast with internal arrays initialized.
+     */
     public Podcast() {
         itunesCategory = new ArrayList<>();
         skipDays = new ArrayList<>();
@@ -39,11 +42,17 @@ public class Podcast {
         cloud = new HashMap<>();
     }
 
-    public HashMap<String, String> getRssFormats() {
+    /**
+     * These are the RSS type attributes in a field, some podcast feeds include extra types. Note: The default iTunes
+     * types will not show up in here, but will be added to a feed.
+     *
+     * @return Hashmap of extra attributes to add on RSS
+     */
+    public Map<String, String> getRssFormats() {
         return rssFormats;
     }
 
-    public void setRssFormats(HashMap<String, String> rssFormats) {
+    public void setRssFormats(Map<String, String> rssFormats) {
         this.rssFormats = rssFormats;
     }
 
@@ -168,11 +177,11 @@ public class Podcast {
     }
 
 
-    public HashMap<String, String> getItunesOwner() {
+    public Map<String, String> getItunesOwner() {
         return itunesOwner;
     }
 
-    public void setItunesOwner(HashMap<String, String> itunesOwner) {
+    public void setItunesOwner(Map<String, String> itunesOwner) {
         this.itunesOwner = itunesOwner;
     }
 
@@ -296,19 +305,19 @@ public class Podcast {
         this.skipDays = skipDays;
     }
 
-    public HashMap<String, String> getTextInput() {
+    public Map<String, String> getTextInput() {
         return textInput;
     }
 
-    public void setTextInput(HashMap<String, String> textInput) {
+    public void setTextInput(Map<String, String> textInput) {
         this.textInput = textInput;
     }
 
-    public HashMap<String, String> getCloud() {
+    public Map<String, String> getCloud() {
         return cloud;
     }
 
-    public void setCloud(HashMap<String, String> cloud) {
+    public void setCloud(Map<String, String> cloud) {
         this.cloud = cloud;
     }
 }

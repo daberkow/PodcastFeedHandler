@@ -1,24 +1,36 @@
 package co.ntbl.podcastfeedhandler;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class PodcastFeedWriter {
     private boolean addGeneratedElement = true;
     private boolean addGeneratedTime = true;
+
+    /**
+     * Convert a Podcast object into an XML feed.
+     *
+     * @param podcast Podcast Object
+     * @return String of XML, this is a representative podcast feed
+     * @throws ParserConfigurationException if the parser config fails
+     * @throws TransformerException failure transforming the data into feed
+     */
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:MethodLength"})
     public String getXml(Podcast podcast) throws ParserConfigurationException, TransformerException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -60,7 +72,8 @@ public class PodcastFeedWriter {
         }
 
         if (podcast.getItunesNewFeedUrl() != null) {
-            channelRssElement.appendChild(createSingleElement(doc, "itunes:new-feed-url", podcast.getItunesNewFeedUrl()));
+            channelRssElement.appendChild(createSingleElement(doc, "itunes:new-feed-url",
+                    podcast.getItunesNewFeedUrl()));
         }
 
         if (podcast.getItunesSummary() != null && !podcast.getItunesSummary().isEmpty()) {
@@ -182,7 +195,7 @@ public class PodcastFeedWriter {
 
         if (podcast.getTextInput().size() > 0) {
             Element textInput = doc.createElement("textInput");
-            podcast.getTextInput().forEach((k ,v) -> {
+            podcast.getTextInput().forEach((k, v) -> {
                 Element itunesTemp = doc.createElement(k);
                 itunesTemp.setTextContent(v);
                 textInput.appendChild(itunesTemp);
@@ -204,7 +217,8 @@ public class PodcastFeedWriter {
         }
 
         if (podcast.getPubDate() != null) {
-            channelRssElement.appendChild(createSingleElement(doc, "pubDate", Util.dateConversion(podcast.getPubDate())));
+            channelRssElement.appendChild(createSingleElement(doc, "pubDate",
+                    Util.dateConversion(podcast.getPubDate())));
         }
 
         LocalDateTime time = LocalDateTime.now();
@@ -213,7 +227,8 @@ public class PodcastFeedWriter {
              debugging and format is not important.
          */
         if (addGeneratedTime) {
-            channelRssElement.appendChild(createSingleElement(doc, "lastBuildDate", time.format(DateTimeFormatter.ISO_DATE_TIME)));
+            channelRssElement.appendChild(createSingleElement(doc, "lastBuildDate",
+                    time.format(DateTimeFormatter.ISO_DATE_TIME)));
         }
 
         // Start Episode Data
@@ -248,6 +263,7 @@ public class PodcastFeedWriter {
         return titleElement;
     }
 
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     private void addEpisodes(Document doc, Element channelRssElement, Podcast podcast) {
         podcast.getEpisodeList().forEach((episode -> {
             Element itemElement = doc.createElement("item");
@@ -356,7 +372,8 @@ public class PodcastFeedWriter {
             }
 
             if (episode.getItunesIsClosedCaptioned() != null) {
-                itemElement.appendChild(createSingleElement(doc, "itunes:isClosedCaptioned", episode.getItunesIsClosedCaptioned()));
+                itemElement.appendChild(createSingleElement(doc, "itunes:isClosedCaptioned",
+                        episode.getItunesIsClosedCaptioned()));
             }
 
             if (episode.getItunesOrder() != null) {

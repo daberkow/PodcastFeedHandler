@@ -45,9 +45,9 @@ class PodcastTest {
         PodcastFeedHandler classUnderTest = new PodcastFeedHandler();
         try {
             Podcast fromDoc = classUnderTest.getPodcastFromDocument(doc);
+            Assertions.assertNotEquals(fromDoc.getEpisodeList().size(), 0);
         } catch (MalformedURLException | PodcastFeedException e) {
             throw new RuntimeException(e);
         }
-        Assertions.assertTrue(true);
     }
 }
