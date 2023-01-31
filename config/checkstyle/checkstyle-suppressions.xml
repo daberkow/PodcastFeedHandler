@@ -13,12 +13,10 @@
     <suppress files="[/\\]src[/\\].*[Tt]est[/\\](java|groovy)[/\\]" checks="AvoidStaticImport" />
     <suppress files="[/\\]src[/\\].*[Tt]est[/\\](java|groovy)[/\\]" id="BanSystemOut" />
     <suppress files="[/\\]src[/\\].*[Tt]est[/\\](java|groovy)[/\\]" id="BanSystemErr" />
-    <suppress files="[/\\]src[/\\].*[Tt]est[/\\](java|groovy)[/\\]" id="NewlineAtEndOfFile" />
 
     <!-- Some things we dont need for a fun project -->
     <suppress files="[/\\]src[/\\].*[Mm]ain[/\\](java|groovy)[/\\]" checks="MultipleVariableDeclarations" />
     <suppress files="[/\\]src[/\\].*[Mm]ain[/\\](java|groovy)[/\\]" checks="DesignForExtension" />
-    <suppress files="[/\\]src[/\\].*[Mm]ain[/\\](java|groovy)[/\\]" checks="NewlineAtEndOfFile" />
 
     <!-- Suppress test resources -->
     <suppress files="[/\\]src[/\\]test[/\\]resources.*" checks="." />

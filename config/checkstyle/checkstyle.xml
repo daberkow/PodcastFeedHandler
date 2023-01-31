@@ -15,9 +15,6 @@
     <property name="severity" value="error"/>
 
     <module name="FileTabCharacter"/> <!-- Java Style Guide: Whitespace characters -->
-    <module name="NewlineAtEndOfFile"> <!-- Java Style Guide: Line ending: LF -->
-        <property name="lineSeparator" value="lf"/>
-    </module>
     <module name="RegexpSingleline"> <!-- No reference needed as this is evident. -->
         <property name="format" value="&lt;&lt;&lt;&lt;&lt;&lt;&lt;"/>
         <property name="message" value="Found (&lt;&lt;&lt;&lt;&lt;&lt;&lt;), so it looks like you had a merge conflict that compiles. Please fix it."/>
