@@ -62,28 +62,19 @@ tasks.named('test') {
 }
 
 publishing {
-    publications {
-        create<MavenPublication>("default") {
-            from(components["java"])
-            // Include any other artifacts here, like javadocs
-        }
-    }
     repositories {
-//        maven {
-//            name = "OSSRH"
-//            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-//            credentials {
-//                username = System.getenv("MAVEN_USERNAME")
-//                password = System.getenv("MAVEN_PASSWORD")
-//            }
-//        }
         maven {
             name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/daberkow/PodcastFeedHandler"
+            url = uri("https://maven.pkg.github.com/daberkow/PodcastFeedHandler")
             credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
             }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
         }
     }
 }
