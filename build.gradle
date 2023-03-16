@@ -29,7 +29,14 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
+// signing {
+//     sign configurations.archives
+// }
+
 signing {
+    def signingKey = System.getenv("GPG_SIGNING_KEY")
+    def signingPassword = System.getenv("GPG_SIGNING_PASSPHRASE")
+    useInMemoryPgpKeys(signingKey, signingPassword)
     sign configurations.archives
 }
 
