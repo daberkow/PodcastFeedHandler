@@ -19,6 +19,9 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         arguments: clean build test --scan
+      env:
+        GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+        GPG_SIGNING_PASSPHRASE: ${{ secrets.GPG_SIGNING_PASSPHRASE }}
     - name: Upload build reports
       uses: actions/upload-artifact@v3
       if: always() # always run even if the previous step fails
