@@ -53,6 +53,8 @@ artifacts {
 //     sign configurations.archives
 // }
 
+ext.admin = System.getenv("MAVEN_USERNAME")
+
 signing {
     required { admin }
     def signingKey = System.getenv("GPG_SIGNING_KEY")
@@ -146,8 +148,6 @@ if (hasProperty('buildScan')) {
 // MAVEN
 //
 
-ext.admin = System.getenv("MAVEN_USERNAME")
-
 artifacts {
     archives jar
     archives sourcesJar
@@ -159,7 +159,7 @@ artifacts {
 //     sign configurations.archives
 // }
 
-val isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
+def isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
 
 publishing {
     publications {
@@ -202,7 +202,7 @@ publishing {
     repositories {
         maven {
             name = "OSSRH"
-            url = if (isReleaseVersion) {
+            if (isReleaseVersion) {
                 uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
             } else {
                 uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
@@ -221,7 +221,7 @@ model {
     tasks.publishMavenJavaPublicationToMavenLocal {
         dependsOn(project.tasks.signArchives)
     }
-    tasks.publishMavenJavaPublicationToMavenRepository {
+    tasks.publishMavenJavaPublicationToOSSRHRepository {
         dependsOn(project.tasks.signArchives)
     }
     tasks.publish {
