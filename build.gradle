@@ -3,7 +3,6 @@ plugins {
     id 'java-library'
     id 'idea'
     id "com.github.ben-manes.versions" version "0.44.0"
-    id 'maven'
     id 'signing'
     id 'maven-publish'
     id 'checkstyle'
@@ -91,16 +90,17 @@ publishing {
                 password = System.getenv("GITHUB_TOKEN")
             }
         }
+        maven {
+            name = "OSSRH"
+            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
     }
 
-    maven {
-      name = "OSSRH"
-      url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-      credentials {
-        username = System.getenv("MAVEN_USERNAME")
-        password = System.getenv("MAVEN_PASSWORD")
-      }
-    }
+
     publications {
         gpr(MavenPublication) {
             from(components.java)
