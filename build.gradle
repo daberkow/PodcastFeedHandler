@@ -159,6 +159,8 @@ artifacts {
 //     sign configurations.archives
 // }
 
+val isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -199,7 +201,12 @@ publishing {
     }
     repositories {
         maven {
-            url "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            name = "OSSRH"
+            url = if (isReleaseVersion) {
+                uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            } else {
+                uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            }
             if (admin) {
                 credentials {
                     username = System.getenv("MAVEN_USERNAME")
