@@ -171,112 +171,121 @@ publishing {
             artifact sourcesJar
             artifact javadocJar
 
-            if (admin) {
-                // sign the pom
-                pom.withXml {
-                    def pomFile = file("${project.buildDir}/generated-pom.xml")
-                    writeTo(pomFile)
-                    def pomAscFile = signing.sign(pomFile).signatureFiles[0]
-                    artifact(pomAscFile) {
-                        classifier = null
-                        extension = 'pom.asc'
+            pom {
+                name = 'PodcastFeedHandler'
+                description = rootProject.description
+                url = 'https://github.com/daberkow/PodcastFeedHandler'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/daberkow/PodcastFeedHandler/blob/main/LICENSE'
+                        distribution = 'repo'
                     }
-                    pomFile.delete()
                 }
-
-                // sign the artifacts
-                project.tasks.signArchives.signatureFiles.each {
-                    artifact(it) {
-                        def matcher = it.file =~ /-(sources|javadoc|jre9)\.jar\.asc$/
-                        if (matcher.find()) {
-                            classifier = matcher.group(1)
-                        } else {
-                            classifier = null
-                        }
-                        extension = 'jar.asc'
+                developers {
+                    developer {
+                        id = 'daberkow'
+                        name = 'Daniel Berkowitz'
+                        email = 'dansberkowitz@gmail.com'
                     }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/daberkow/PodcastFeedHandler.git'
+                    developerConnection = 'scm:git:ssh://git@github.com:daberkow/PodcastFeedHandler.git'
+                    url = 'https://github.com/daberkow/PodcastFeedHandler'
                 }
             }
+        
+
+            // if (admin) {
+            //     // sign the pom
+            //     pom.withXml {
+            //         def pomFile = file("${project.buildDir}/generated-pom.xml")
+            //         writeTo(pomFile)
+            //         def pomAscFile = signing.sign(pomFile).signatureFiles[0]
+            //         artifact(pomAscFile) {
+            //             classifier = null
+            //             extension = 'pom.asc'
+            //         }
+            //         pomFile.delete()
+            //     }
+
+            //     // sign the artifacts
+            //     project.tasks.signArchives.signatureFiles.each {
+            //         artifact(it) {
+            //             def matcher = it.file =~ /-(sources|javadoc|jre9)\.jar\.asc$/
+            //             if (matcher.find()) {
+            //                 classifier = matcher.group(1)
+            //             } else {
+            //                 classifier = null
+            //             }
+            //             extension = 'jar.asc'
+            //         }
+            //     }
+            // }
         }
     }
     repositories {
         maven {
             name = "OSSRH"
-            if (isReleaseVersion) {
-                uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            } else {
-                uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            }
             if (admin) {
                 credentials {
                     username = System.getenv("MAVEN_USERNAME")
                     password = System.getenv("MAVEN_PASSWORD")
                 }
             }
+            def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+            def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
         }
     }
 }
 
-model {
-    tasks.publishMavenJavaPublicationToMavenLocal {
-        dependsOn(project.tasks.signArchives)
-    }
-    tasks.publishMavenJavaPublicationToOSSRHRepository {
-        dependsOn(project.tasks.signArchives)
-    }
-    tasks.publish {
-        dependsOn(project.tasks.build)
-    }
-    tasks.install {
-        dependsOn(project.tasks.build)
-    }
-}
 
+// def customizePom(pom, gradleProject) {
+//     pom.withXml {
+//         def root = asNode()
 
-def customizePom(pom, gradleProject) {
-    pom.withXml {
-        def root = asNode()
+//         // add all items necessary for maven central publication
+//         root.children().last() + {
+//             resolveStrategy = Closure.DELEGATE_FIRST
 
-        // add all items necessary for maven central publication
-        root.children().last() + {
-            resolveStrategy = Closure.DELEGATE_FIRST
+//             name 'PodcastFeedHandler'
+//             description gradleProject.description
+//             url 'https://github.com/daberkow/PodcastFeedHandler'
+//             organization {
+//                 name 'Daniel Berkowitz'
+//                 url 'https://ntbl.co'
+//             }
+//             issueManagement {
+//                 system 'GitHub'
+//                 url 'https://github.com/daberkow/PodcastFeedHandler/issues'
+//             }
+//             licenses {
+//                 license {
+//                     name 'MIT License'
+//                     url 'https://github.com/daberkow/PodcastFeedHandler/blob/main/LICENSE'
+//                     distribution 'repo'
+//                 }
+//             }
+//             scm {
+//                 url 'https://github.com/daberkow/PodcastFeedHandler'
+//                 connection 'scm:git:git://github.com/daberkow/PodcastFeedHandler.git'
+//                 developerConnection 'scm:git:ssh://git@github.com:daberkow/PodcastFeedHandler.git'
+//             }
+//             developers {
+//                 developer {
+//                     id 'daberkow'
+//                     name 'Daniel Berkowitz'
+//                     email 'dansberkowitz@gmail.com'
+//                     timezone '-5'
+//                 }
+//             }
+//         }
+//     }
+// }
 
-            name 'PodcastFeedHandler'
-            description gradleProject.description
-            url 'https://github.com/daberkow/PodcastFeedHandler'
-            organization {
-                name 'Daniel Berkowitz'
-                url 'https://ntbl.co'
-            }
-            issueManagement {
-                system 'GitHub'
-                url 'https://github.com/daberkow/PodcastFeedHandler/issues'
-            }
-            licenses {
-                license {
-                    name 'MIT License'
-                    url 'https://github.com/daberkow/PodcastFeedHandler/blob/main/LICENSE'
-                    distribution 'repo'
-                }
-            }
-            scm {
-                url 'https://github.com/daberkow/PodcastFeedHandler'
-                connection 'scm:git:git://github.com/daberkow/PodcastFeedHandler.git'
-                developerConnection 'scm:git:ssh://git@github.com:daberkow/PodcastFeedHandler.git'
-            }
-            developers {
-                developer {
-                    id 'daberkow'
-                    name 'Daniel Berkowitz'
-                    email 'dansberkowitz@gmail.com'
-                    timezone '-5'
-                }
-            }
-        }
-    }
-}
-
-task install(dependsOn: publishToMavenLocal) {
-    group = 'Publishing'
-    description = 'Installs artifacts to local Maven repository'
-}
+// task install(dependsOn: publishToMavenLocal) {
+//     group = 'Publishing'
+//     description = 'Installs artifacts to local Maven repository'
+// }
