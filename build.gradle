@@ -166,7 +166,7 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
 
-            customizePom(pom, rootProject)
+            // customizePom(pom, rootProject)
 
             artifact sourcesJar
             artifact javadocJar
