@@ -8,12 +8,30 @@ plugins {
     id 'checkstyle'
 }
 
-version project.hasProperty('version') ? version : '0.1.0'
+version = '0.1.0-SNAPSHOT'
 
 sourceCompatibility = 11
 targetCompatibility = 11
 
 group = 'co.ntbl.podcastfeedhandler'
+
+jar {
+    manifest {
+        attributes(
+                "Class-Path": "co.ntbl.podcastfeedhandler",
+                "Main-Class": "PodcastFeedHandler",
+                "Implementation-Title": project.name,
+                "Implementation-Version": version,
+                "Implementation-Vendor": "Daniel Berkowitz",
+                "Build-Jdk": org.gradle.internal.jvm.Jvm.current(),
+                "Gradle-Version": GradleVersion.current().toString()
+        )
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
