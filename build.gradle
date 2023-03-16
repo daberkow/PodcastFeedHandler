@@ -13,6 +13,8 @@ version = '0.1.0-SNAPSHOT'
 sourceCompatibility = 11
 targetCompatibility = 11
 
+rootProject.description = 'Read and Write Podcast feeds from Java.'
+
 group = 'co.ntbl.podcastfeedhandler'
 
 jar {
@@ -52,6 +54,7 @@ artifacts {
 // }
 
 signing {
+    required { admin }
     def signingKey = System.getenv("GPG_SIGNING_KEY")
     def signingPassword = System.getenv("GPG_SIGNING_PASSPHRASE")
     useInMemoryPgpKeys(signingKey, signingPassword)
@@ -105,36 +108,168 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/daberkow/PodcastFeedHandler")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-        maven {
-            name = "OSSRH"
-            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            credentials {
-                username = System.getenv("MAVEN_USERNAME")
-                password = System.getenv("MAVEN_PASSWORD")
-            }
-        }
-    }
+// publishing {
+//     repositories {
+//         maven {
+//             name = "GitHubPackages"
+//             url = uri("https://maven.pkg.github.com/daberkow/PodcastFeedHandler")
+//             credentials {
+//                 username = System.getenv("GITHUB_ACTOR")
+//                 password = System.getenv("GITHUB_TOKEN")
+//             }
+//         }
+//         maven {
+//             name = "OSSRH"
+//             url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+//             credentials {
+//                 username = System.getenv("MAVEN_USERNAME")
+//                 password = System.getenv("MAVEN_PASSWORD")
+//             }
+//         }
+//     }
 
-    publications {
-        gpr(MavenPublication) {
-            from(components.java)
-        }
-    }
-}
+//     publications {
+//         gpr(MavenPublication) {
+//             from(components.java)
+//         }
+//     }
+// }
 
 if (hasProperty('buildScan')) {
     buildScan {
         termsOfServiceUrl = 'https://gradle.com/terms-of-service'
         termsOfServiceAgree = 'yes'
     }
+}
+
+//
+// MAVEN
+//
+
+ext.admin = System.getenv("MAVEN_USERNAME")
+
+artifacts {
+    archives jar
+    archives sourcesJar
+    archives javadocJar
+}
+
+// signing {
+//     required { admin }
+//     sign configurations.archives
+// }
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            customizePom(pom, rootProject)
+
+            artifact sourcesJar
+            artifact javadocJar
+
+            if (admin) {
+                // sign the pom
+                pom.withXml {
+                    def pomFile = file("${project.buildDir}/generated-pom.xml")
+                    writeTo(pomFile)
+                    def pomAscFile = signing.sign(pomFile).signatureFiles[0]
+                    artifact(pomAscFile) {
+                        classifier = null
+                        extension = 'pom.asc'
+                    }
+                    pomFile.delete()
+                }
+
+                // sign the artifacts
+                project.tasks.signArchives.signatureFiles.each {
+                    artifact(it) {
+                        def matcher = it.file =~ /-(sources|javadoc|jre9)\.jar\.asc$/
+                        if (matcher.find()) {
+                            classifier = matcher.group(1)
+                        } else {
+                            classifier = null
+                        }
+                        extension = 'jar.asc'
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            if (admin) {
+                credentials {
+                    username = System.getenv("MAVEN_USERNAME")
+                    password = System.getenv("MAVEN_PASSWORD")
+                }
+            }
+        }
+    }
+}
+
+model {
+    tasks.publishMavenJavaPublicationToMavenLocal {
+        dependsOn(project.tasks.signArchives)
+    }
+    tasks.publishMavenJavaPublicationToMavenRepository {
+        dependsOn(project.tasks.signArchives)
+    }
+    tasks.publish {
+        dependsOn(project.tasks.build)
+    }
+    tasks.install {
+        dependsOn(project.tasks.build)
+    }
+}
+
+
+def customizePom(pom, gradleProject) {
+    pom.withXml {
+        def root = asNode()
+
+        // add all items necessary for maven central publication
+        root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+
+            name 'PodcastFeedHandler'
+            description gradleProject.description
+            url 'https://github.com/daberkow/PodcastFeedHandler'
+            organization {
+                name 'Daniel Berkowitz'
+                url 'https://ntbl.co'
+            }
+            issueManagement {
+                system 'GitHub'
+                url 'https://github.com/daberkow/PodcastFeedHandler/issues'
+            }
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'https://github.com/daberkow/PodcastFeedHandler/blob/main/LICENSE'
+                    distribution 'repo'
+                }
+            }
+            scm {
+                url 'https://github.com/daberkow/PodcastFeedHandler'
+                connection 'scm:git:git://github.com/daberkow/PodcastFeedHandler.git'
+                developerConnection 'scm:git:ssh://git@github.com:daberkow/PodcastFeedHandler.git'
+            }
+            developers {
+                developer {
+                    id 'daberkow'
+                    name 'Daniel Berkowitz'
+                    email 'dansberkowitz@gmail.com'
+                    timezone '-5'
+                }
+            }
+        }
+    }
+}
+
+task install(dependsOn: publishToMavenLocal) {
+    group = 'Publishing'
+    description = 'Installs artifacts to local Maven repository'
 }
