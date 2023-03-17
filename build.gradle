@@ -8,7 +8,7 @@ plugins {
     id 'checkstyle'
 }
 
-version = '0.1.1-SNAPSHOT'
+version = '0.1.1'
 
 sourceCompatibility = 11
 targetCompatibility = 11
