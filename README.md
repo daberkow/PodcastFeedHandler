@@ -6,10 +6,10 @@ A Java library to read and write podcast feeds. This library took a lot of inspi
 ## Key Features
 * Reading/Writing Podcast feeds, reading local files and remote
 * Java 11+ compatible
+* No dependencies, 100% self contained and native code
 
 ## Progress
-Reading in seems to work well, need to test more. Then work on writing feeds. That should work but has not been tested.
-
+Reading and writing seems to be working, going to use in projects I have and document more.
 
 ## Getting Started
 ### Installation
