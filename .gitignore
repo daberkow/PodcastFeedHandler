@@ -148,5 +148,3 @@ gradle-app.setting
 bin/
 
 .vscode/*
-
-src/main/resources/version.properties
