@@ -7,14 +7,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.w3c.dom.Node;
 
+/**
+ * Podcast Object, this is the root of a podcast feed.
+ *
+ * @author daberkow@github
+ */
 public class Podcast {
     private String title, link, description, language, copyright, managingEditor, webMaster,
             generator, picsRating, docsString, lastBuildDate, docs, ttl;
 
     private String itunesNewFeedUrl, itunesAuthor, itunesSubtitle, itunesImage, itunesSummary, itunesBlock, itunesType,
             itunesKeywords, itunesExplicit;
-    private List<String> itunesCategory, skipHours, skipDays;
+    private final List<String> itunesCategory;
+    private List<String> skipHours;
+    private List<String> skipDays;
 
     private Map<String, String> rssFormats, textInput, itunesOwner, cloud;
 
@@ -24,22 +32,52 @@ public class Podcast {
 
     private MediaRestrictions mediaRestrictions;
 
-    private Map<String, List<String>> unknownFields;
-    private List<Episode> episodeList;
+    private Map<String, List<Node>> unknownFields;
+    private final List<Episode> episodeList;
 
     /**
      * A blank podcast with internal arrays initialized.
      */
     public Podcast() {
-        itunesCategory = new ArrayList<>();
-        skipDays = new ArrayList<>();
-        skipHours = new ArrayList<>();
-        episodeList = new ArrayList<>();
-        unknownFields = new HashMap<>();
-        rssFormats = new HashMap<>();
-        itunesOwner = new HashMap<>();
-        textInput = new HashMap<>();
-        cloud = new HashMap<>();
+        this.itunesCategory = new ArrayList<>();
+        this.skipDays = new ArrayList<>();
+        this.skipHours = new ArrayList<>();
+        this.episodeList = new ArrayList<>();
+        this.unknownFields = new HashMap<>();
+        this.rssFormats = new HashMap<>();
+        this.itunesOwner = new HashMap<>();
+        this.textInput = new HashMap<>();
+        this.cloud = new HashMap<>();
+    }
+
+    /**
+     * Constructor for Podcast object, with all the fields which are required for a iTunes feed.
+     *
+     * @param title podcast title
+     * @param description podcast description
+     * @param itunesImage artwork for the podcast
+     * @param language language in the 2 letter ISO639 code (or with modifiers such as "en-us")
+     * @param itunesCategory category info, pipe separated
+     * @param itunesExplicit a "true" or "false" for is the podcast explicit, sometimes this seems to be set to "clean"
+     */
+    public Podcast(String title, String description, String itunesImage, String language, String itunesCategory,
+                   String itunesExplicit) {
+        this.itunesCategory = new ArrayList<>();
+        this.skipDays = new ArrayList<>();
+        this.skipHours = new ArrayList<>();
+        this.episodeList = new ArrayList<>();
+        this.unknownFields = new HashMap<>();
+        this.rssFormats = new HashMap<>();
+        this.itunesOwner = new HashMap<>();
+        this.textInput = new HashMap<>();
+        this.cloud = new HashMap<>();
+
+        this.title = title;
+        this.description = description;
+        this.itunesImage = itunesImage;
+        this.language = language;
+        this.itunesCategory.add(itunesCategory);
+        this.itunesExplicit = itunesExplicit;
     }
 
     /**
@@ -80,10 +118,21 @@ public class Podcast {
         this.description = description;
     }
 
+    /**
+     * Return the current set ISO639 language code.
+     *
+     * @return two letter (with possible - modifier) language code
+     */
     public String getLanguage() {
         return language;
     }
 
+    /**
+     * A 2 letter language code in compliance with <a href="http://www.loc.gov/standards/iso639-2/php/code_list.php">codes</a>.
+     * Some modifiers are allowed like "en-us".
+     *
+     * @param language string of language
+     */
     public void setLanguage(String language) {
         this.language = language;
     }
@@ -197,15 +246,21 @@ public class Podcast {
         return itunesCategory;
     }
 
-    public void setItunesCategory(List<String> itunesCategory) {
-        this.itunesCategory = itunesCategory;
+    /**
+     * Add a category to the iTunes categories, these can be multiple levels, we use | to separate them. When creating
+     * a feed, those will be separated into appropriate levels. <a href="https://podcasters.apple.com/support/1691-apple-podcasts-categories">List of categories</a>.
+     *
+     * @param passedItunesCategory pipe separated categories (ex "Society &amp; Culture|Personal Journals")
+     */
+    public void addItunesCategory(String passedItunesCategory) {
+        getItunesCategory().add(passedItunesCategory);
     }
 
-    public Map<String, List<String>> getUnknownFields() {
+    public Map<String, List<Node>> getUnknownFields() {
         return unknownFields;
     }
 
-    public void setUnknownFields(Map<String, List<String>> unknownFields) {
+    public void setUnknownFields(Map<String, List<Node>> unknownFields) {
         this.unknownFields = unknownFields;
     }
 
@@ -213,8 +268,8 @@ public class Podcast {
         return episodeList;
     }
 
-    public void setEpisodeList(List<Episode> episodeList) {
-        this.episodeList = episodeList;
+    public void addEpisode(Episode singleEpisode) {
+        getEpisodeList().add(singleEpisode);
     }
 
     public String getItunesSummary() {
@@ -285,6 +340,12 @@ public class Podcast {
         return itunesExplicit;
     }
 
+    /**
+     * While this is labeled a required field, there are large podcasts that don't have it. iTunes doc says it should be
+     * true or false, yet I also have found "clean" or "yes"/"no" used.
+     *
+     * @param itunesExplicit in theory true or false for if the podcast is explicit
+     */
     public void setItunesExplicit(String itunesExplicit) {
         this.itunesExplicit = itunesExplicit;
     }
@@ -319,5 +380,21 @@ public class Podcast {
 
     public void setCloud(Map<String, String> cloud) {
         this.cloud = cloud;
+    }
+
+    /**
+     * This checks for the minimal required fields for a feed to work in iTunes. The required fields are title,
+     * description, iTunes Image (artwork), language, iTunes categories, iTunes is explicit.
+     *
+     * @return true if podcast has all the fields it needs
+     */
+    @SuppressWarnings("CyclomaticComplexity")
+    public boolean isContainingAllRequiredItunesFields() {
+        return (getTitle() != null && !getTitle().isEmpty())
+                && (getDescription() != null && !getDescription().isEmpty())
+                && (getItunesImage() != null && !getItunesImage().isEmpty())
+                && (getLanguage() != null && !getLanguage().isEmpty())
+                && !getItunesCategory().isEmpty()
+                && (getItunesExplicit() != null && !getItunesExplicit().isEmpty());
     }
 }

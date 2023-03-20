@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -17,6 +17,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public class PodcastFeedWriter {
     private boolean addGeneratedElement = true;
@@ -52,7 +53,7 @@ public class PodcastFeedWriter {
         channelRssElement.appendChild(createSingleElement(doc, "description", podcast.getDescription()));
         if (addGeneratedElement) {
             channelRssElement.appendChild(createSingleElement(doc, "generator",
-                    "co.ntbl.podcastfeedhandler.PodcastFeedWriter v" + PodcastFeedHandler.VERSION));
+                    "co.ntbl.podcastfeedhandler.PodcastFeedWriter v" + Util.getVersion()));
         }
 
         if (podcast.getLanguage() != null && !podcast.getLanguage().isEmpty()) {
@@ -231,6 +232,17 @@ public class PodcastFeedWriter {
                     time.format(DateTimeFormatter.ISO_DATE_TIME)));
         }
 
+        if (!podcast.getUnknownFields().isEmpty()) {
+            for (Map.Entry<String, List<Node>> singleNode : podcast.getUnknownFields().entrySet()) {
+                for (Node singleSubNode : singleNode.getValue()) {
+                    Node importedNode = doc.importNode(singleSubNode, true);
+                    Element eElement = (Element) importedNode;
+//                    rootElement.insertBefore(eElement,null);
+                    channelRssElement.appendChild(eElement);
+                }
+            }
+        }
+
         // Start Episode Data
         addEpisodes(doc, channelRssElement, podcast);
 
@@ -268,9 +280,15 @@ public class PodcastFeedWriter {
         podcast.getEpisodeList().forEach((episode -> {
             Element itemElement = doc.createElement("item");
             itemElement.appendChild(createSingleElement(doc, "title", episode.getTitle()));
-            itemElement.appendChild(createSingleElement(doc, "link", episode.getLink().toString()));
-            itemElement.appendChild(createSingleElement(doc, "description", episode.getDescription()));
-            itemElement.appendChild(createSingleElement(doc, "pubDate", Util.dateConversion(episode.getPubDate())));
+            if (episode.getLink() != null) {
+                itemElement.appendChild(createSingleElement(doc, "link", episode.getLink().toString()));
+            }
+            if (episode.getDescription() != null) {
+                itemElement.appendChild(createSingleElement(doc, "description", episode.getDescription()));
+            }
+            if (episode.getPubDate() != null) {
+                itemElement.appendChild(createSingleElement(doc, "pubDate", Util.dateConversion(episode.getPubDate())));
+            }
 
             Element guidElement = doc.createElement("guid");
             guidElement.setAttribute("isPermaLink", "false");
@@ -278,7 +296,7 @@ public class PodcastFeedWriter {
                 guidElement.setTextContent(episode.getGuid());
             } else {
                 // If there is no guid
-                guidElement.setTextContent(UUID.fromString(episode.getTitle()).toString());
+                guidElement.setTextContent(episode.getEnclosure().getUrl().toString());
             }
             itemElement.appendChild(guidElement);
 

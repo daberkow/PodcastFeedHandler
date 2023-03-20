@@ -1,9 +1,12 @@
 package co.ntbl.podcastfeedhandler;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
+import java.util.Properties;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -29,9 +32,13 @@ public class Util {
     public static ZonedDateTime stringToDate(String dt) {
         DateTimeFormatter [] dateFormats = {
                 DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US),
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.US),
                 DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss Z", Locale.US),
+                DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss z", Locale.US),
                 DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm Z", Locale.US),
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm z", Locale.US),
                 DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm Z", Locale.US),
+                DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm z", Locale.US),
                 DateTimeFormatter.RFC_1123_DATE_TIME
         };
 
@@ -60,5 +67,20 @@ public class Util {
     public static String dateConversion(ZonedDateTime date) {
         DateTimeFormatter dt = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
         return date.format(DateTimeFormatter.RFC_1123_DATE_TIME);
+    }
+
+    public static String getVersion() {
+        String fullVersionString = "";
+        InputStream inputStream = Util.class.getClassLoader().getResourceAsStream("version.properties");
+
+        Properties versionProperties = new Properties();
+        try {
+            versionProperties.load(inputStream);
+        } catch (IOException e) {
+            fullVersionString += e.getMessage() + ":";
+        }
+
+        fullVersionString += versionProperties.getProperty("version", "");
+        return fullVersionString;
     }
 }

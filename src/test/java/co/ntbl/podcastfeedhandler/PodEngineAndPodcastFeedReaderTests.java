@@ -21,7 +21,7 @@ import javax.xml.transform.TransformerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class PodEngineAndPodcastFeedHandlerTests {
+public class PodEngineAndPodcastFeedReaderTests {
     private com.icosillion.podengine.models.Podcast podcast;
 
     /**
@@ -32,7 +32,7 @@ public class PodEngineAndPodcastFeedHandlerTests {
     public void before() throws MalformedFeedException {
         PodcastTest podcastTest = new PodcastTest();
         String originalPodcastFeed = podcastTest.getRawStringFromAssets("podengine.xml");
-        PodcastFeedHandler classUnderTest = new PodcastFeedHandler();
+        PodcastFeedReader classUnderTest = new PodcastFeedReader();
         Podcast fromDoc;
         try {
             fromDoc = classUnderTest.getPodcastFromDocument(originalPodcastFeed);

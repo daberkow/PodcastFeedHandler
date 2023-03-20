@@ -31,11 +31,27 @@ public class Episode {
     /**
      * A blank episode type, this can be used when making your own feeds, but be careful of nulls.
      */
-    public Episode() {
+    private Episode() {
+    }
+
+    public Episode(String title, EpisodeEnclosure enclosure) {
+        this.title = title;
+        this.enclosure = enclosure;
+    }
+
+    public Episode(String title, String mediaUrl, Long length, String mimeType) {
+        this.title = title;
+        URL episodeUrl;
+        try {
+            episodeUrl = new URL(mediaUrl);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        this.enclosure = new EpisodeEnclosure(episodeUrl, length, mimeType);
     }
 
     /**
-     * Create a episode from an XML node of a single "item".
+     * Create an episode from an XML node of a single "item".
      * @param enclosureNode XML Element
      * @throws MalformedURLException failure to parse expected fields
      */
@@ -341,5 +357,16 @@ public class Episode {
 
     public void setCategory(List<String> category) {
         this.category = category;
+    }
+
+    /**
+     * Check the minimum fields required for iTunes are present for this episode.
+     * <a href="https://help.apple.com/itc/podcasts_connect/#/itcb54353390">Episode Requirements</a>.
+     *
+     * @return true if requirements are met
+     */
+    public boolean isContainingAllRequiredFieldsForItunes() {
+        return ((getTitle() != null && !getTitle().isEmpty())
+                && getEnclosure() != null);
     }
 }

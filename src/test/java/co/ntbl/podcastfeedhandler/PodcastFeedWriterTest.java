@@ -1,10 +1,12 @@
 package co.ntbl.podcastfeedhandler;
 
+import co.ntbl.podcastfeedhandler.episode.EpisodeEnclosure;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import javax.xml.parsers.DocumentBuilder;
@@ -17,6 +19,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -28,7 +31,7 @@ class PodcastFeedWriterTest {
         String xmlName = "tal.xml";
         PodcastTest podcastTest = new PodcastTest();
         String originalPodcastFeed = podcastTest.getRawStringFromAssets(xmlName);
-        PodcastFeedHandler classUnderTest = new PodcastFeedHandler();
+        PodcastFeedReader classUnderTest = new PodcastFeedReader();
         Podcast fromDoc;
         try {
             fromDoc = classUnderTest.getPodcastFromDocument(originalPodcastFeed);
@@ -36,7 +39,7 @@ class PodcastFeedWriterTest {
             throw new RuntimeException(e);
         }
         PodcastFeedWriter writer = new PodcastFeedWriter();
-        writer.setAddGeneratedElement(false);
+        writer.setAddGeneratedElement(true);
         writer.setAddGeneratedTime(false);
 
         String returnedFeed;
@@ -95,8 +98,8 @@ class PodcastFeedWriterTest {
 //        System.out.println("fixed theirs feed");
 //        System.out.println(newParsedDoc);
 //
-//        System.out.println("Generated feed");
-//        System.out.println(returnedFeed);
+        System.out.println("Generated feed");
+        System.out.println(returnedFeed);
 
         //Somehow this breaks on github actions
 //        XmlAssert
@@ -153,6 +156,73 @@ class PodcastFeedWriterTest {
         } catch (ParserConfigurationException | TransformerException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    @Test
+    void createANewFeedFromNothing() {
+        Podcast myPodcast = new Podcast();
+        // The required fields are title, description, iTunes Image (artwork), language, iTunes categories,
+        // iTunes is explicit.
+        Assertions.assertFalse(myPodcast.isContainingAllRequiredItunesFields());
+        myPodcast.setTitle("My awesome podcast");
+        Assertions.assertFalse(myPodcast.isContainingAllRequiredItunesFields());
+        myPodcast.setItunesImage("http://ntbl.co/image.jpg"); // This does not actually exist
+        Assertions.assertFalse(myPodcast.isContainingAllRequiredItunesFields());
+        myPodcast.setDescription("Podcast about my breakfast");
+        Assertions.assertFalse(myPodcast.isContainingAllRequiredItunesFields());
+        myPodcast.setLanguage("en-us");
+        Assertions.assertFalse(myPodcast.isContainingAllRequiredItunesFields());
+        myPodcast.addItunesCategory("Society &amp; Culture|Personal Journals");
+        Assertions.assertFalse(myPodcast.isContainingAllRequiredItunesFields());
+        myPodcast.setItunesExplicit("true");
+        Assertions.assertTrue(myPodcast.isContainingAllRequiredItunesFields());
+
+        myPodcast.setGenerator("PodcastFeedGenerator");
+
+        URL episodeUrl;
+        try {
+            episodeUrl = new URL("https://ntbl.co/media/1.mp3");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        EpisodeEnclosure firstEpEnclosure = new EpisodeEnclosure(episodeUrl, 57981736L, "audio/mpeg");
+        Episode singleEpisode = new Episode("My big Omelet", firstEpEnclosure);
+
+        myPodcast.addEpisode(singleEpisode);
+
+        PodcastFeedWriter podcastFeedWriter = new PodcastFeedWriter();
+        String xml;
+        try {
+            xml = podcastFeedWriter.getXml(myPodcast);
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        } catch (TransformerException e) {
+            throw new RuntimeException(e);
+        }
+        Assertions.assertFalse(xml.isEmpty());
+        System.out.println(xml);
+    }
+
+    @Test
+    void createANewFeedFromNothingQuickInit() {
+        // The required fields are title, description, iTunes Image (artwork), language, iTunes categories,
+        // iTunes is explicit.
+        Podcast myPodcast = new Podcast("My awesome podcast", "Podcast about my breakfast",
+                "http://ntbl.co/image.jpg", "en-US", "Society &amp; Culture|Personal Journals",
+                "true");
+        Assertions.assertTrue(myPodcast.isContainingAllRequiredItunesFields());
+
+        Episode singleEpisode = new Episode("My big Omelet", "https://ntbl.co/media/1.mp3", 9234751L, "audio/mpeg");
+        myPodcast.addEpisode(singleEpisode);
+
+        PodcastFeedWriter podcastFeedWriter = new PodcastFeedWriter();
+        String xml;
+        try {
+            xml = podcastFeedWriter.getXml(myPodcast);
+        } catch (ParserConfigurationException | TransformerException e) {
+            throw new RuntimeException(e);
+        }
+        Assertions.assertFalse(xml.isEmpty());
+        System.out.println(xml);
     }
 }

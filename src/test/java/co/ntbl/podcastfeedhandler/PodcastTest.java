@@ -29,7 +29,7 @@ class PodcastTest {
 
     @Test Podcast stringXmlToPodcastObject(String podcastFeed) {
         String doc = getRawStringFromAssets(podcastFeed);
-        PodcastFeedHandler classUnderTest = new PodcastFeedHandler();
+        PodcastFeedReader classUnderTest = new PodcastFeedReader();
         Podcast fromDoc;
         try {
             fromDoc = classUnderTest.getPodcastFromDocument(doc);
@@ -41,7 +41,7 @@ class PodcastTest {
 
     @Test void getAllEpisodesTestPm() {
         String doc = getRawStringFromAssets("planetmoney.xml");
-        PodcastFeedHandler classUnderTest = new PodcastFeedHandler();
+        PodcastFeedReader classUnderTest = new PodcastFeedReader();
         try {
             Podcast fromDoc = classUnderTest.getPodcastFromDocument(doc);
             Assertions.assertNotEquals(fromDoc.getEpisodeList().size(), 0);

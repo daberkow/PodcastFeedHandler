@@ -5,10 +5,10 @@ import co.ntbl.podcastfeedhandler.podcast.MediaRestrictions;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,20 +19,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class PodcastFeedHandler {
-    public static final String VERSION = "0.1.0";
-    private String feed;
-
-    public PodcastFeedHandler() {
-    }
-
-    public PodcastFeedHandler initFromFeed(String importingFeed) {
-        this.feed = importingFeed;
-        return this;
-    }
-
-    private Episode[] getPodcastFromFeed() {
-        return null;
+/**
+ *  Podcast feed reader, this creates a Podcast object from a document.
+ */
+public class PodcastFeedReader {
+    public PodcastFeedReader() {
     }
 
     public Podcast getPodcastFromDocument(String document) throws MalformedURLException, PodcastFeedException {
@@ -51,7 +42,7 @@ public class PodcastFeedHandler {
         Node rootNode = parsedDocument.getFirstChild();
         if (!podcastXmlValidator(rootNode)) {
             // Invalid podcast feed
-            return null;
+            throw new PodcastFeedException("Failure to find podcast root node");
         }
 
         // We now know the feed follows the general Podcast / iTunes standard
@@ -77,7 +68,6 @@ public class PodcastFeedHandler {
             throw new PodcastFeedException("Missing channels element.");
         }
 
-        List<Episode> episodes = new ArrayList<>();
         NodeList childrenNodes = channel.getChildNodes();
         for (int i = 0; i < childrenNodes.getLength(); i++) {
             switch (childrenNodes.item(i).getNodeName()) {
@@ -109,7 +99,9 @@ public class PodcastFeedHandler {
                     workingPodcast.setWebMaster(childrenNodes.item(i).getTextContent());
                     break;
                 case "pubDate":
-                    workingPodcast.setPubDate(Util.stringToDate(childrenNodes.item(i).getTextContent()));
+                    String stringDate = childrenNodes.item(i).getTextContent();
+                    ZonedDateTime date = Util.stringToDate(stringDate);
+                    workingPodcast.setPubDate(date);
                     break;
                 case "lastBuildDate":
                     workingPodcast.setLastBuildDate(childrenNodes.item(i).getTextContent());
@@ -138,7 +130,6 @@ public class PodcastFeedHandler {
                             if (childrenNodes.item(i).getChildNodes().item(j).getNodeName().equals("#text")) {
                                 continue;
                             }
-                            Node element = childrenNodes.item(i).getChildNodes().item(j);
                             workingPodcast.getItunesOwner().put(
                                     childrenNodes.item(i).getChildNodes().item(j).getNodeName(),
                                     childrenNodes.item(i).getChildNodes().item(j).getFirstChild().getTextContent());
@@ -235,23 +226,19 @@ public class PodcastFeedHandler {
                     break;
                 case "item":
                     Episode parsedEpisode = new Episode(childrenNodes.item(i));
-                    episodes.add(parsedEpisode);
+                    workingPodcast.addEpisode(parsedEpisode);
                     break;
                 default:
                     if (workingPodcast.getUnknownFields().containsKey(childrenNodes.item(i).getNodeName())) {
                         workingPodcast.getUnknownFields().get(
-                                childrenNodes.item(i).getNodeName()).add(childrenNodes.item(i).toString());
+                                childrenNodes.item(i).getNodeName()).add(childrenNodes.item(i));
                     } else {
                         workingPodcast.getUnknownFields().put(childrenNodes.item(i).getNodeName(),
-                                Collections.singletonList(childrenNodes.item(i).toString()));
+                                new ArrayList<>(Arrays.asList(childrenNodes.item(i))));
                     }
-                    System.err.println(childrenNodes.item(i).getNodeName() + " not implemented in podcast feed.");
-                    //Throw here when ready for production
-//                    throw new PodcastFeedException(childrenNodes.item(i).getNodeName() + " not implemented");
                     break;
             }
         }
-        workingPodcast.setEpisodeList(episodes);
         return workingPodcast;
     }
 
@@ -261,38 +248,21 @@ public class PodcastFeedHandler {
             return false;
         }
 
-        boolean standardVersionCheck = false;
-        if (rootNode.hasAttributes()
+        boolean standardVersionCheck = rootNode.hasAttributes()
                 && ((rootNode.getAttributes().getNamedItem("xmlns:dc") != null
-                    && rootNode.getAttributes().getNamedItem("xmlns:dc")
-                        .getTextContent().equals("http://purl.org/dc/elements/1.1/"))
+                && rootNode.getAttributes().getNamedItem("xmlns:dc")
+                .getTextContent().equals("http://purl.org/dc/elements/1.1/"))
                 || (rootNode.getAttributes().getNamedItem("xmlns:content") != null
-                    && rootNode.getAttributes().getNamedItem("xmlns:content")
-                        .getTextContent().equals("http://purl.org/dc/elements/1.1/")))) {
-            standardVersionCheck = true;
-        }
+                && rootNode.getAttributes().getNamedItem("xmlns:content")
+                .getTextContent().equals("http://purl.org/dc/elements/1.1/")));
 
-        boolean itunesCheck = false;
-        if (rootNode.hasAttributes()
+        boolean itunesCheck = rootNode.hasAttributes()
                 && (rootNode.getAttributes().getNamedItem("xmlns:itunes") != null
                 && rootNode.getAttributes().getNamedItem("xmlns:itunes")
-                .getTextContent().equals("http://www.itunes.com/dtds/podcast-1.0.dtd"))) {
-            itunesCheck = true;
-        }
+                .getTextContent().equals("http://www.itunes.com/dtds/podcast-1.0.dtd"));
 
-        boolean childCheck = false;
-        if (Util.getChildNodeWithName(rootNode, "channel") != null) {
-            childCheck = true;
-        }
+        boolean childCheck = Util.getChildNodeWithName(rootNode, "channel") != null;
 
-        return standardVersionCheck && itunesCheck && childCheck;
-    }
-
-    public String getFeed() {
-        return feed;
-    }
-
-    public void setFeed(String feed) {
-        this.feed = feed;
+        return (standardVersionCheck || itunesCheck) && childCheck;
     }
 }
