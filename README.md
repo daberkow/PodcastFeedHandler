@@ -6,14 +6,14 @@ A Java library to read and write podcast feeds. This library took a lot of inspi
 ## Key Features
 * Reading/Writing Podcast feeds, reading local files and remote
 * Java 11+ compatible
-* Tested, Built, Signed, and Published with GitHub actions
+* Tested, Built, Signed, and Published with GitHub actions to Maven Central
 * No dependencies, 100% self contained and native code
 
 ## Progress
 Reading and writing seems to be working, going to use in projects I have and document more.
 
 ## Future plans
-Add support for http://search.yahoo.com/mrss/ and http://www.rawvoice.com/rawvoiceRssModule/ xml standards like sn.xml 
+Add support for http://search.yahoo.com/mrss/ and http://www.rawvoice.com/rawvoiceRssModule/ xml standards like sn.xml
 contain.
 
 ## Getting Started
@@ -69,3 +69,9 @@ try {
     throw new RuntimeException(e);
 }
 ```
+
+## Support
+
+<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="JetBrains Logo (Main) logo." height="50px" width="50px">
+
+Jetbrains supports this project through their [Open Source Development - Community Support Program](https://jb.gg/OpenSourceSupport).

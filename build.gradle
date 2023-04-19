@@ -110,6 +110,7 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+// To accept gradle scans and publish them
 if (hasProperty('buildScan')) {
     buildScan {
         termsOfServiceUrl = 'https://gradle.com/terms-of-service'
