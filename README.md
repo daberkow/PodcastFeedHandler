@@ -70,6 +70,22 @@ try {
 }
 ```
 
+## Development
+
+### Checking for testing library updates
+
+Using the gradle wrapper, you can call 'dependencyUpdates' to have a plugin check for available updates.
+``` bash
+./gradlew dependencyUpdates
+```
+
+### Checking dependency health
+
+Using another plugin with gradle we can call the following code to see the health of our gradle project.
+``` bash
+./gradlew projectHealth
+```
+
 ## Support
 
 <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="JetBrains Logo (Main) logo." height="50px" width="50px">

@@ -2,10 +2,11 @@ plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'java-library'
     id 'idea'
-    id "com.github.ben-manes.versions" version "0.46.0"
+    id "com.github.ben-manes.versions" version "0.51.0"
     id 'signing'
     id 'maven-publish'
     id 'checkstyle'
+    id "com.autonomousapps.dependency-analysis" version "1.30.0"
 }
 
 version = '0.1.2-SNAPSHOT'
@@ -93,16 +94,9 @@ repositories {
 
 dependencies {
     // Use JUnit Jupiter for testing.
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
-    // https://mvnrepository.com/artifact/org.xmlunit/xmlunit-assertj3
-    testImplementation group: 'org.xmlunit', name: 'xmlunit-assertj', version: '2.9.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
     testImplementation group: 'com.icosillion.podengine', name: 'podengine', version: '2.4.1'
-
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
-    testImplementation 'org.apache.commons:commons-math3:3.6.1'
-
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    testImplementation 'com.google.guava:guava:31.1-jre'
 }
 
 tasks.named('test') {
