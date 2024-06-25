@@ -85,9 +85,3 @@ Using another plugin with gradle we can call the following code to see the healt
 ``` bash
 ./gradlew projectHealth
 ```
-
-## Support
-
-<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="JetBrains Logo (Main) logo." height="50px" width="50px">
-
-Jetbrains supports this project through their [Open Source Development - Community Support Program](https://jb.gg/OpenSourceSupport).
