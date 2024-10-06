@@ -6,7 +6,7 @@ plugins {
     id 'signing'
     id 'maven-publish'
     id 'checkstyle'
-    id "com.autonomousapps.dependency-analysis" version "1.30.0"
+    id "com.autonomousapps.dependency-analysis" version "2.1.4"
 }
 
 version = '0.1.2-SNAPSHOT'
@@ -94,8 +94,8 @@ repositories {
 
 dependencies {
     // Use JUnit Jupiter for testing.
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.2'
     testImplementation group: 'com.icosillion.podengine', name: 'podengine', version: '2.4.1'
 }
 
