@@ -2,7 +2,7 @@ plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'java-library'
     id 'idea'
-    id "com.github.ben-manes.versions" version "0.51.0"
+    id "com.github.ben-manes.versions" version "0.56.0"
     id 'signing'
     id 'maven-publish'
     id 'checkstyle'
