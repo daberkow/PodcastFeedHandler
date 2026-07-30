@@ -16,6 +16,13 @@ version = '0.1.2'
 sourceCompatibility = 11
 targetCompatibility = 11
 
+// The maven-publish plugin (Vanniktech) requires a Java 17+ JVM to *run*
+// Gradle, so CI now builds on JDK 17. `release` guarantees the compiled
+// bytecode and API surface stay Java 11 compatible regardless of the JDK.
+tasks.withType(JavaCompile).configureEach {
+    options.release = 11
+}
+
 rootProject.description = 'Read and Write Podcast feeds from Java.'
 
 group = 'co.ntbl'
