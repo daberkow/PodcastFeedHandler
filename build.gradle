@@ -11,7 +11,11 @@ plugins {
     id "com.vanniktech.maven.publish" version "0.37.0"
 }
 
-version = '0.1.2'
+// The version is driven by the git tag at release time: the publish workflow
+// passes the release tag via -PreleaseVersion (see .github/workflows/publish.yml).
+// A leading "v" (e.g. v0.2.0) is stripped. Local/CI builds without the property
+// fall back to a -SNAPSHOT so they can never be mistaken for a real release.
+version = (findProperty('releaseVersion') ?: '0.1.2-SNAPSHOT').toString().replaceFirst(/^v/, '')
 
 sourceCompatibility = 11
 targetCompatibility = 11

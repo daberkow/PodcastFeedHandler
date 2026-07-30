@@ -20,7 +20,10 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1 # v3
       - name: Publish to Maven Central (Central Portal)
-        run: ./gradlew publishToMavenCentral --no-configuration-cache
+        # The release tag (e.g. 0.2.0 or v0.2.0) becomes the artifact version;
+        # build.gradle strips any leading "v". This is the single source of
+        # truth for the version — no manual edit of build.gradle is needed.
+        run: ./gradlew publishToMavenCentral --no-configuration-cache -PreleaseVersion=${{ github.event.release.tag_name }}
         env:
           # Central Portal user token (Account -> Generate User Token).
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
