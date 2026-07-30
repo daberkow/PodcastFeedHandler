@@ -3,10 +3,12 @@ plugins {
     id 'java-library'
     id 'idea'
     id "com.github.ben-manes.versions" version "0.56.0"
-    id 'signing'
-    id 'maven-publish'
     id 'checkstyle'
     id "com.autonomousapps.dependency-analysis" version "3.18.0"
+    // Publishes to Maven Central via the new Central Publisher Portal
+    // (OSSRH was shut down 2025-06-30). Applies the maven-publish and
+    // signing plugins internally and adds sources/javadoc jars for us.
+    id "com.vanniktech.maven.publish" version "0.37.0"
 }
 
 version = '0.1.2'
@@ -48,22 +50,6 @@ jar {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
-ext.admin = System.getenv("MAVEN_USERNAME")
-
-signing {
-    required { admin }
-    def signingKey = System.getenv("GPG_SIGNING_KEY")
-    def signingPassword = System.getenv("GPG_SIGNING_PASSPHRASE")
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    // sign configurations.archives
-    sign publishing.publications
 }
 
 test {
@@ -113,52 +99,47 @@ if (hasProperty('buildScan')) {
 }
 
 //
-// MAVEN
+// MAVEN CENTRAL (Central Publisher Portal)
+//
+// Credentials and the signing key are supplied via Gradle properties /
+// environment variables (see .github/workflows/publish.yml):
+//   ORG_GRADLE_PROJECT_mavenCentralUsername / mavenCentralPassword
+//       -> a Central Portal *user token* (Account -> Generate User Token),
+//          NOT your portal login and NOT the old OSSRH token.
+//   ORG_GRADLE_PROJECT_signingInMemoryKey / signingInMemoryKeyPassword
+//       -> the ASCII-armored GPG private key and its passphrase.
 //
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
+mavenPublishing {
+    // Upload to the Central Portal and automatically release once validation
+    // passes. Set to false if you'd rather click "Publish" in the web UI.
+    publishToMavenCentral(true)
+    signAllPublications()
 
-            pom {
-                name = 'PodcastFeedHandler'
-                description = rootProject.description
-                url = 'https://github.com/daberkow/PodcastFeedHandler'
-                licenses {
-                    license {
-                        name = 'MIT License'
-                        url = 'https://github.com/daberkow/PodcastFeedHandler/blob/main/LICENSE'
-                        distribution = 'repo'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'daberkow'
-                        name = 'Daniel Berkowitz'
-                        email = 'dansberkowitz@gmail.com'
-                    }
-                }
-                scm {
-                    connection = 'scm:git:git://github.com/daberkow/PodcastFeedHandler.git'
-                    developerConnection = 'scm:git:ssh://git@github.com:daberkow/PodcastFeedHandler.git'
-                    url = 'https://github.com/daberkow/PodcastFeedHandler'
-                }
+    coordinates(group.toString(), 'podcastfeedhandler', version.toString())
+
+    pom {
+        name = 'PodcastFeedHandler'
+        description = rootProject.description
+        url = 'https://github.com/daberkow/PodcastFeedHandler'
+        licenses {
+            license {
+                name = 'MIT License'
+                url = 'https://github.com/daberkow/PodcastFeedHandler/blob/main/LICENSE'
+                distribution = 'repo'
             }
         }
-    }
-    repositories {
-        maven {
-            name = "OSSRH"
-            if (admin) {
-                credentials {
-                    username = System.getenv("MAVEN_USERNAME")
-                    password = System.getenv("MAVEN_PASSWORD")
-                }
+        developers {
+            developer {
+                id = 'daberkow'
+                name = 'Daniel Berkowitz'
+                email = 'dansberkowitz@gmail.com'
             }
-            def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-            def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        }
+        scm {
+            connection = 'scm:git:git://github.com/daberkow/PodcastFeedHandler.git'
+            developerConnection = 'scm:git:ssh://git@github.com:daberkow/PodcastFeedHandler.git'
+            url = 'https://github.com/daberkow/PodcastFeedHandler'
         }
     }
 }
