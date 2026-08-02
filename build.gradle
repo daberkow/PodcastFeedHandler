@@ -13,8 +13,10 @@ plugins {
 
 version = '0.1.2'
 
-sourceCompatibility = 11
-targetCompatibility = 11
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
 
 // The maven-publish plugin (Vanniktech) requires a Java 17+ JVM to *run*
 // Gradle, so CI now builds on JDK 17. `release` guarantees the compiled
