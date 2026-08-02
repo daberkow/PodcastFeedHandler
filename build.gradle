@@ -89,8 +89,8 @@ repositories {
 
 dependencies {
     // Use JUnit Jupiter for testing.
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:6.1.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:6.1.2'
     // Gradle 9 no longer puts the JUnit Platform launcher on the test
     // runtime classpath automatically; it must be declared explicitly.
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
