@@ -2,7 +2,7 @@ plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'java-library'
     id 'idea'
-    id "com.github.ben-manes.versions" version "0.56.0"
+    id "io.github.ben-manes.versions" version "0.58.0"
     id 'checkstyle'
     id "com.autonomousapps.dependency-analysis" version "3.18.0"
     // Publishes to Maven Central via the new Central Publisher Portal
@@ -13,8 +13,10 @@ plugins {
 
 version = '0.1.2'
 
-sourceCompatibility = 11
-targetCompatibility = 11
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
 
 // The maven-publish plugin (Vanniktech) requires a Java 17+ JVM to *run*
 // Gradle, so CI now builds on JDK 17. `release` guarantees the compiled
@@ -89,6 +91,9 @@ dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter:5.11.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.2'
+    // Gradle 9 no longer puts the JUnit Platform launcher on the test
+    // runtime classpath automatically; it must be declared explicitly.
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation group: 'com.icosillion.podengine', name: 'podengine', version: '2.4.1'
 }
 
