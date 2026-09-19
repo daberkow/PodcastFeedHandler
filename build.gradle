@@ -2,7 +2,7 @@ plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'java-library'
     id 'idea'
-    id "io.github.ben-manes.versions" version "0.61.0"
+    id "io.github.ben-manes.versions" version "0.63.1"
     id 'checkstyle'
     id "com.autonomousapps.dependency-analysis" version "3.18.0"
     // Publishes to Maven Central via the new Central Publisher Portal
