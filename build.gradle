@@ -4,7 +4,7 @@ plugins {
     id 'idea'
     id "io.github.ben-manes.versions" version "0.61.0"
     id 'checkstyle'
-    id "com.autonomousapps.dependency-analysis" version "3.18.0"
+    id "com.autonomousapps.dependency-analysis" version "3.19.2"
     // Publishes to Maven Central via the new Central Publisher Portal
     // (OSSRH was shut down 2025-06-30). Applies the maven-publish and
     // signing plugins internally and adds sources/javadoc jars for us.
